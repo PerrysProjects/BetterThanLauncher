@@ -1,0 +1,304 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="Nouma" />
+
+    <meta property="og:title" content="BTA Modding" />
+    <meta property="og:description" content="Discover and share Minecraft mods for Better Than Adventure!" />
+    <meta property="og:image" content="/static/assets/images/logo.png" />
+
+    <link rel="icon" type="image/png" href="/static/assets/images/logo.png"/>
+    <title>
+    0.1.4 - Potato Logistics
+</title>
+
+    <link rel="stylesheet" href="/static/assets/css/style.css">
+    <link rel="stylesheet" href="/static/assets/css/output.css">
+    <link rel="stylesheet" href="/static/assets/css/markdown.css">
+
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+</head>
+<body>
+<header>
+    <nav class="container mx-auto">
+        <div class="flex flex-wrap items-center justify-between mx-auto p-3">
+            <a href="/" class="flex items-center">
+                <img src="/static/assets/images/logo.png" class="h-8 mr-3" alt="BTA Modding logo"/>
+                <span class="self-center text-2xl font-title whitespace-nowrap text-white">Better Than Curseforge</span>
+            </a>
+            <div class="flex md:order-2">
+
+                
+                    <a href="/login/"
+                       class="flex items-center gap-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"></path>
+                        </svg>
+                        Sign in
+                    </a>
+                
+            </div>
+            <button data-collapse-toggle="navbar-cta" type="button"
+                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                    aria-controls="navbar-cta" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M1 1h15M1 7h15M1 13h15"></path>
+                </svg>
+            </button>
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
+                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 rounded-lg md:flex-row md:space-x-8 md:mt-0">
+                    <li>
+                        
+                        <a href="/"
+                           class=" hover:underline hover:underline-offset-2 block py-2 pl-3 pr-4 rounded"
+                           aria-current="page">Home</a>
+                    </li>
+                    <li>
+                        
+                        <a href="/mods/"
+                           class=" hover:underline hover:underline-offset-2 block py-2 pl-3 pr-4 rounded"
+                           aria-current="page">Mods</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</header>
+
+<main class="container mx-auto">
+    
+
+    <div class="flex flex-row gap-3">
+        <aside class="basis-1/4">
+            <div class="p-5 bg-card rounded-xl shadow-lg">
+                
+
+                <a href="/SamuelDeboni/potato-logistics">
+                    <img class="bg-background rounded-xl h-28 w-28" src="/media/mods/None/potato-pixelart_scaled.png"
+                         alt="Potato Logistics logo"/>
+                    <h2 class="text-2xl font-bold pt-2">Potato Logistics</h2>
+                </a>
+
+                <a class="font-medium hover:underline hover:text-white" href="/mods/">
+                    <div class="flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"></path>
+                        </svg>
+                        Mod
+                    </div>
+                </a>
+
+                <p class="pt-2">Pipes, item transportation, and much more...</p>
+
+                <hr class="h-px my-3 bg-separator border-0">
+
+                <div class="flex flex-row items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 me-2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                    </svg>
+                    <p><span class="font-bold text-2xl">7</span> downloads</p>
+                </div>
+
+                <div class="flex flex-row items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 me-2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"></path>
+                    </svg>
+                    <p>Created 1 days ago</p>
+                </div>
+
+                <div class="flex flex-row items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 me-2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+                    </svg>
+                    <p>Updated 1 days ago</p>
+                </div>
+
+            </div>
+
+            <div class="mt-4 p-5 bg-card rounded-xl shadow-lg">
+                <h2 class="text-lg font-bold pt-2">Featured versions</h2>
+                <ul class="mt-3 max-w-md">
+                    
+                        <li class="mb-2 sm:mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex flex-row">
+                                    <a href="/SamuelDeboni/potato-logistics/version/014/download"
+                                       class="bg-green-500 self-center rounded-2xl text-black p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-6 h-6"
+                                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                                        </svg>
+                                    </a>
+                                    
+                                </div>
+                                <a class=" hover:underline flex-1 min-w-0"
+                                   href="/SamuelDeboni/potato-logistics/version/014">
+                                    <div class="">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            0.1.4
+                                        </p>
+                                        
+                                        
+                                        
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                    
+                </ul>
+            </div>
+        </aside>
+        <div class="basis-3/4">
+            <div class="p-5 mb-4 bg-card rounded-xl shadow-lg">
+
+                <ul class="flex flex-col md:flex-row gap-3">
+                    
+                    
+                    <li><a class="" href="/SamuelDeboni/potato-logistics">Description</a>
+                    </li>
+                    <li><a class="" href="/SamuelDeboni/potato-logistics/versions">Versions</a>
+                    </li>
+                </ul>
+
+            </div>
+
+            
+
+    <div class="p-5 bg-card rounded-xl shadow-lg">
+        <h1>Download started</h1>
+        <h2>You'll be redirected in a few seconds..</h2>
+    </div>
+
+
+        </div>
+    </div>
+
+
+</main>
+
+<footer
+  class="text-center text-gray-600 lg:text-left">
+  <div class="p-4 text-center">
+    © 2023 Copyright:
+    <a
+      class="text-gray-400"
+      href="https://github.com/Noumaa/" target="_blank"
+      >Nouma</a
+    >
+  </div>
+</footer>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+
+<!-- Development -->
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+<!-- Production -->
+
+
+
+
+
+    <script>
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = '/media/mods/3/014/PotatoLogistics-0.1.4.jar';
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(function () {
+            window.location.href = '/SamuelDeboni/potato-logistics/version/014'
+        }, 5000);
+
+    </script>
+
+
+
+<script>
+    // Function to detect if the user is using a mobile device
+    function detectMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    // Function to display the mobile warning banner
+    function displayMobileBanner() {
+        // Check if the user has previously closed the banner
+        if (localStorage.getItem("mobileBannerClosed") !== "true") {
+            // Create a div element for the banner
+            var banner = document.createElement('div');
+            banner.style.position = "fixed";
+            banner.style.top = "0";
+            banner.style.left = "0";
+            banner.style.width = "100%";
+            banner.style.backgroundColor = "#FF0000";
+            banner.style.color = "#FFFFFF";
+            banner.style.padding = "10px";
+            banner.style.textAlign = "center";
+
+            // Create a close button
+            var closeButton = document.createElement('button');
+            closeButton.innerHTML = "Close";
+            closeButton.style.float = "right";
+            closeButton.style.cursor = "pointer";
+
+            // Add an event listener to the close button to hide the banner and store the state in localStorage
+            closeButton.addEventListener('click', function() {
+                banner.style.display = "none";
+                localStorage.setItem("mobileBannerClosed", "true");
+            });
+
+            // Create a message for the banner
+            var message = document.createElement('div');
+            message.innerHTML = "It's not recommended to use a mobile device at the moment. Please use a desktop computer or tablet.";
+
+            // Add the close button and message to the banner
+            banner.appendChild(closeButton);
+            banner.appendChild(message);
+
+            // Add the banner to the page
+            document.body.appendChild(banner);
+        }
+    }
+
+    // Check if the user is on a smartphone and display the banner if so
+    if (detectMobileDevice()) {
+        displayMobileBanner();
+    }
+
+    $('#button').on('click', function () {
+        $('#dropdown-menu').toggleClass('hidden')
+    })
+
+    $(document).on('click', function () {
+        if (!($('#button').is(":hover")))
+            $('#dropdown-menu').addClass('hidden')
+    })
+
+    
+
+</script>
+
+</body>
+</html>
