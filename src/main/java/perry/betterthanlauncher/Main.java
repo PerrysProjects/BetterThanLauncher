@@ -1,20 +1,41 @@
 package perry.betterthanlauncher;
 
-import perry.betterthanlauncher.util.WebsiteTool;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import perry.betterthanlauncher.util.files.Config;
 
-public class Main {
+import javax.swing.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Objects;
+
+public class Main extends JFrame {
+    public static String name;
+    public static String version;
+
+    public static String path;
+    public static Config config;
+
     public static void main(String[] args) {
-        String url = "https://bta-modding.nouma-vallee.fr";
-        String targetPath = "Downloads";
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = null;
+        try {
+            if(new File("pom.xml").exists()) {
+                model = reader.read(new FileReader("pom.xml"));
+            } else {
+                model = reader.read(new InputStreamReader(Objects.requireNonNull(Main.class.getResourceAsStream("/META-INF/maven/org.apache.maven/maven-model/pom.xml"))));
+            }
+        } catch(IOException | XmlPullParserException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+        }
+        name = Objects.requireNonNull(model).getArtifactId().replaceAll("-", " ");
+        version = model.getVersion();
 
-        //document.querySelector("body > main > div > div > div:nth-child(1)") <- this one not
-        //document.querySelector("body > main > div > div > div:nth-child(2)")
-        //document.querySelector("body > main > div > div > div:nth-child(3)")
-        String cssSelector = "body > main > div > div > div.p-5.bg-card.rounded-xl.shadow-lg.markdown-body";
+        DirectoriesAndFiles.create();
 
-        WebsiteTool wbt = new WebsiteTool(url);
-        System.out.println(wbt.getParagraphs("/SamuelDeboni/potato-logistics", cssSelector));
-        System.out.println(wbt.countDivs("/mods", "body > main > div > div > div", "my-3 py-4 px-4 bg-card rounded-xl shadow-lg flex "));
-        System.out.println(wbt.getDivContent("/mods", "body > main > div > div > div", "my-3 py-4 px-4 bg-card rounded-xl shadow-lg flex "));
+        Frame frame = new Frame();
     }
 }
