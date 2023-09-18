@@ -15,6 +15,12 @@ public class Config {
         readConfigFile();
     }
 
+    public Config(String filePath) {
+        this.filePath = filePath;
+        configMap = new HashMap<>();
+        readConfigFile();
+    }
+
     private void createConfigFile() {
         try {
             File configFile = new File(filePath);
@@ -29,23 +35,29 @@ public class Config {
     }
 
     private void readConfigFile() {
-        try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        File configFile = new File(filePath);
+        if (!configFile.exists()) {
+            System.err.println("Config file not found: " + filePath);
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 String[] parts = line.split(":");
-                if(parts.length == 2) {
+                if (parts.length == 2) {
                     String key = parts[0].trim();
                     String value = parts[1].trim();
                     Object parsedValue;
                     try {
                         parsedValue = Integer.parseInt(value);
-                    } catch(NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         parsedValue = value;
                     }
                     configMap.put(key, parsedValue);
                 }
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -54,7 +66,6 @@ public class Config {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(key + ": " + value);
             writer.newLine();
-            System.out.println("Config written: " + key + ": " + value);
         } catch(IOException e) {
             System.err.println("Error writing config: " + e.getMessage());
         }
@@ -65,7 +76,6 @@ public class Config {
             for(Map.Entry<String, String> entry : configMap.entrySet()) {
                 writer.write(entry.getKey() + ": " + entry.getValue());
                 writer.newLine();
-                System.out.println("Config written: " + entry.getKey() + ": " + entry.getValue());
             }
         } catch(IOException e) {
             System.err.println("Error writing config: " + e.getMessage());
