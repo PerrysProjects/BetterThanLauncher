@@ -1,10 +1,11 @@
 package perry.betterthanlauncher;
 
+import perry.betterthanlauncher.instances.Instance;
+import perry.betterthanlauncher.instances.Versions;
 import perry.betterthanlauncher.util.files.Config;
-import perry.betterthanlauncher.util.instances.Instance;
 
 import javax.swing.*;
-import java.util.List;
+import java.util.Map;
 
 public class Main extends JFrame {
     public static String name;
@@ -13,7 +14,7 @@ public class Main extends JFrame {
     public static String path;
     public static Config config;
 
-    public static List<Instance> instances;
+    public static Map<String, Instance> instances;
 
     public static void main(String[] args) {
         /*MavenXpp3Reader reader = new MavenXpp3Reader();
@@ -32,9 +33,11 @@ public class Main extends JFrame {
 
         name = "BetterThanLauncher";
 
-        FileManagement.create();
+        FileManagement.load();
 
-        Instance.createInstance("Test", "bta_1.7.7.0_02");
+        Instance.createInstance("Test", Versions.BTA_1_7_7_0_02);
+        //Instance.createInstance("Vanilla Beta", Versions.B_1_7_3);
+        //Instance.createInstance("Zweiter Test", Versions.BTA_1_7_7_0_02);
 
         instances = Instance.getInstances();
 

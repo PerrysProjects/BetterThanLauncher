@@ -1,6 +1,6 @@
 package perry.betterthanlauncher.components;
 
-import perry.betterthanlauncher.util.instances.Instance;
+import perry.betterthanlauncher.instances.Instance;
 
 import javax.swing.*;
 import java.awt.*;
