@@ -12,15 +12,15 @@ import java.nio.file.StandardCopyOption;
 
 public class ResTool {
     public static void copy(String resourceName, String targetFolderPath) {
-        ClassLoader classLoader = ResTool.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(resourceName);
+        InputStream inputStream = ResTool.class.getClassLoader().getResourceAsStream(resourceName);
 
         if(inputStream == null) {
             System.err.println("Error: Resource not found - " + resourceName);
             return;
         }
 
-        Path targetFilePath = Paths.get(targetFolderPath, resourceName);
+        String[] resourceNameSplit = resourceName.replace("\\", "/").split("/");
+        Path targetFilePath = Paths.get(targetFolderPath, resourceNameSplit[resourceNameSplit.length - 1]);
 
         try {
             if(!Files.exists(targetFilePath)) {

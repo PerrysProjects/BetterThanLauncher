@@ -95,7 +95,7 @@ public class Instance {
             config.writeConfig("name", name);
             config.writeConfig("version", version.getFileName());
 
-            ResTool.copy("icon.png", path);
+            ResTool.copy("icons/icon.png", path);
 
             Main.instances = getInstances();
             return true;
@@ -117,7 +117,6 @@ public class Instance {
                 if(file.isDirectory()) {
                     if(new File(file.getPath() + "/instance.conf").exists()) {
                         Config config = new Config(file.getPath() + "/instance.conf");
-                        System.out.println(file.getName());
                         instances.put(file.getName(), new Instance(String.valueOf(config.getValue("name"))));
                     }
                 }
