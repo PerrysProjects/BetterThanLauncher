@@ -9,6 +9,11 @@ Welcome to BetterThanLauncher, a powerful launcher designed specifically for the
 - **Efficient Mod Downloads**: Quickly and conveniently download mods from the [BTA-Modding Website](https://bta-modding.nouma-vallee.fr/) to enhance your Minecraft experience.
 - **User-Friendly Interface**: Enjoy an intuitive and user-friendly interface that simplifies the launcher's operation and navigation.
 
+## Requirements
+
+- Java 17 or higher.
+- A working internet connection for accessing libraries, downloading versions, and obtaining mods.
+
 ## Contributing
 
 We welcome contributions from the community to make BetterThanLauncher even better. If you'd like to contribute, feel free to fork the repository, make your changes, and submit a pull request.
