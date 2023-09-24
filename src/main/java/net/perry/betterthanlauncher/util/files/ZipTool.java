@@ -7,10 +7,29 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public class ZipExtractor {
+public class ZipTool {
+    public static boolean containFile(String zipFilePath, String targetFileName) {
+        try(ZipFile zipFile = new ZipFile(zipFilePath)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+            while(entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if(entry.getName().equals(targetFileName)) {
+                    return true;
+                }
+            }
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void extract(String zipFilePath, String extractPath) {
         File destDir = new File(extractPath);
         byte[] buffer = new byte[1024];

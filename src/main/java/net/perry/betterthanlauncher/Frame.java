@@ -6,14 +6,20 @@ import net.perry.betterthanlauncher.instances.Themes;
 import net.perry.betterthanlauncher.instances.Versions;
 import net.perry.betterthanlauncher.util.files.Config;
 import net.perry.betterthanlauncher.util.files.ImageTool;
+import net.perry.betterthanlauncher.util.files.ZipTool;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class Frame extends JFrame {
@@ -33,9 +39,7 @@ public class Frame extends JFrame {
     }
 
     private void initUI(Themes theme) {
-        // Create content panel
         JPanel contentPanel = createContentPanel(theme);
-        // Add content panel to the frame
         add(contentPanel);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,7 +73,6 @@ public class Frame extends JFrame {
         scrollPane.setBackground(null);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(null);
-        //scrollPane.getViewport().setBorder(BorderFactory.createEmptyBorder());
         ((JScrollBar) scrollPane.getComponent(1)).setUI(new CustomScrollBarUI());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -90,13 +93,106 @@ public class Frame extends JFrame {
     private JPanel createTopBarPanel() {
         JPanel topBar = new JPanel();
         topBar.setBackground(null);
-        topBar.setPreferredSize(new Dimension(getWidth(), 50));
+        topBar.setPreferredSize(new Dimension(getWidth(), 60));
+        topBar.setLayout(new BorderLayout());
 
-        JButton createInstance = new JButton("create");
-        createInstance.setBounds(5, 5, 40, 40);
-        createInstance.addActionListener(e -> createInstanceAction());
+        JPanel create = new JPanel();
+        create.setLayout(null);
+        create.setBackground(null);
+        create.setMaximumSize(new Dimension(200, topBar.getHeight()));
+        create.setMinimumSize(new Dimension(200, topBar.getHeight()));
+        create.setPreferredSize(new Dimension(200, topBar.getHeight()));
 
-        topBar.add(createInstance);
+        final boolean[] overCreateButton = {false};
+
+        JButton createButton = new JButton("Create") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int radius = 20;
+                int width = getWidth();
+                int height = getHeight();
+                g2.setColor(theme.getBackground());
+                g2.fillRect(0, 0, width, height);
+                if(overCreateButton[0]) {
+                    g2.setColor(theme.getComponents5());
+                } else {
+                    g2.setColor(theme.getComponents4());
+                }
+                g2.fillRoundRect(0, 0, width, height, radius, radius);
+                g2.setColor(theme.getText2());
+                g2.drawString("Create", width / 2 - 18, height / 2 + 5);
+            }
+        };
+        createButton.setPreferredSize(new Dimension(60, 40));
+        createButton.setBounds(15, create.getHeight() + 10, 60, 40);
+        createButton.setBackground(null);
+        createButton.setForeground(theme.getText());
+        createButton.setBorder(BorderFactory.createEmptyBorder());
+        createButton.addActionListener(e -> createInstanceAction());
+        createButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                overCreateButton[0] = true;
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                overCreateButton[0] = false;
+            }
+        });
+
+        final boolean[] overImportButton = {false};
+
+        JButton importButton = new JButton("Import") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int radius = 20;
+                int width = getWidth();
+                int height = getHeight();
+                g2.setColor(theme.getBackground());
+                g2.fillRect(0, 0, width, height);
+                if(overImportButton[0]) {
+                    g2.setColor(theme.getComponents5());
+                } else {
+                    g2.setColor(theme.getComponents4());
+                }
+                g2.fillRoundRect(0, 0, width, height, radius, radius);
+                g2.setColor(theme.getText2());
+                g2.drawString("Import", width / 2 - 18, height / 2 + 5);
+            }
+        };
+        importButton.setPreferredSize(new Dimension(60, 40));
+        importButton.setBounds(createButton.getX() + createButton.getWidth() + 15, create.getHeight() + 10, 60, 40);
+        importButton.setBackground(null);
+        importButton.setForeground(theme.getText());
+        importButton.setBorder(BorderFactory.createEmptyBorder());
+        importButton.addActionListener(e -> importInstanceAction());
+        importButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                overImportButton[0] = true;
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                overImportButton[0] = false;
+            }
+        });
+
+        create.add(createButton);
+        create.add(importButton);
+
+        topBar.add(create, BorderLayout.WEST);
         return topBar;
     }
 
@@ -105,7 +201,6 @@ public class Frame extends JFrame {
         center.setBackground(null);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 
-        // Add existing instances to center panel
         for(Instance instance : Main.instances.values()) {
             createInstancePanel(instance);
         }
@@ -124,7 +219,7 @@ public class Frame extends JFrame {
                 int width = getWidth() - 20;
                 int height = getHeight() - 10;
 
-                g.setColor(theme.getShadow());
+                g2.setColor(theme.getShadow());
                 g2.fillRoundRect(10, 5, width + 3, height + 3, radius + 3, radius + 3);
                 g2.setColor(theme.getComponents());
                 g2.fillRoundRect(10, 5, width, height, radius, radius);
@@ -148,8 +243,8 @@ public class Frame extends JFrame {
 
         ImageIcon originalIcon = instance.getIcon();
         ImageIcon scaledIcon = new ImageIcon(originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
-        ImageIcon roundedIcon = ImageTool.createRoundedIcon(scaledIcon, 60, 60, 10);
-        JLabel icon = new JLabel(instance.getName(), roundedIcon, SwingConstants.LEFT);
+        ImageIcon roundedIcon = ImageTool.createRoundedIcon(scaledIcon, 60, 60, 10, theme.getComponents2());
+        JLabel icon = new JLabel("     " + instance.getName(), roundedIcon, SwingConstants.LEFT);
         icon.setForeground(theme.getText());
 
         JPanel play = new JPanel() {
@@ -162,7 +257,7 @@ public class Frame extends JFrame {
                 int width = getWidth();
                 int height = getHeight() - 10;
 
-                g.setColor(theme.getShadow());
+                g2.setColor(theme.getShadow());
                 g2.fillRoundRect(-20, 5, width + 3, height + 3, radius + 3, radius + 3);
                 g2.setColor(theme.getComponents());
                 g2.fillRoundRect(-20, 5, width, height, radius, radius);
@@ -195,7 +290,7 @@ public class Frame extends JFrame {
                 }
                 g2.fillRoundRect(0, 0, width, height, radius, radius);
                 g2.setColor(theme.getText2());
-                g2.drawString("Play", width/2 - 12, height/2 + 5);
+                g2.drawString("Play", width / 2 - 12, height / 2 + 5);
             }
         };
         playButton.setPreferredSize(new Dimension(60, 40));
@@ -233,17 +328,28 @@ public class Frame extends JFrame {
     private void createInstanceAction() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 2));
+        panel.setBackground(theme.getBackground());
 
         JTextField nameField = new JTextField();
+        nameField.setBackground(null);
+        nameField.setForeground(theme.getText());
+        nameField.setBorder(BorderFactory.createEmptyBorder());
+
         String[] versionList = new String[Versions.values().length];
         for(int i = 0; i < Versions.values().length; i++) {
             versionList[i] = Versions.values()[i].getFileName();
         }
         JComboBox<String> versionComboBox = new JComboBox<>(versionList);
 
-        panel.add(new JLabel("Enter Instance Name:"));
+        JLabel nameLabel = new JLabel("Enter Instance Name: ");
+        nameLabel.setForeground(theme.getText());
+
+        JLabel versionLabel = new JLabel("Select a Version: ");
+        versionLabel.setForeground(theme.getText());
+
+        panel.add(nameLabel);
         panel.add(nameField);
-        panel.add(new JLabel("Select a Version:"));
+        panel.add(versionLabel);
         panel.add(versionComboBox);
 
         int option = JOptionPane.showOptionDialog(null, panel, "Create Instance", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
@@ -252,10 +358,57 @@ public class Frame extends JFrame {
             String instanceName = nameField.getText();
             String selectedVersion = Objects.requireNonNull(versionComboBox.getSelectedItem()).toString();
 
-            Instance.createInstance(instanceName, Versions.fileNameToVersion(selectedVersion));
-            Instance instance = Main.instances.get(instanceName);
+            if(Main.instances == null || !Main.instances.containsKey(instanceName)) {
+                Instance.createInstance(instanceName, Versions.fileNameToVersion(selectedVersion));
+                Instance instance = Main.instances.get(instanceName);
 
-            createInstancePanel(instance);
+                createInstancePanel(instance);
+            }
+        }
+    }
+
+    private void importInstanceAction() {
+        JFileChooser fileChooser = new JFileChooser();
+
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("ZIP Files", "zip");
+        fileChooser.setFileFilter(filter);
+
+        int result = fileChooser.showOpenDialog(null);
+
+        if(result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+
+            if(selectedFile.getName().endsWith(".zip") && ZipTool.containFile(selectedFile.toString(), "instance.conf")) {
+                try {
+                    File folder = new File(Main.path + "/instances/" + selectedFile.getName().split("\\.")[0]);
+                    if(!folder.exists()) {
+                        if(!folder.mkdirs()) {
+                            System.err.println("Failed to create folder for instance: " + selectedFile.getName().split("\\.")[0]);
+                        }
+
+                        Path sourcePath = Paths.get(selectedFile.toURI());
+                        Path targetPath = Paths.get(Main.path + "/instances/" + selectedFile.getName().split("\\.")[0] + "/" + selectedFile.getName());
+
+                        Files.copy(sourcePath, targetPath);
+                        ZipTool.extract(targetPath.toString(), folder.getPath());
+
+                        Config config = new Config(folder.getPath() + "/instance.conf");
+                        String instanceName = String.valueOf(config.getValue("name"));
+                        String instanceVersion = String.valueOf(config.getValue("version"));
+
+                        if(!Main.instances.containsKey(instanceName)) {
+                            Instance.createInstance(instanceName, Versions.fileNameToVersion(instanceVersion));
+                            Instance instance = Main.instances.get(instanceName);
+
+                            createInstancePanel(instance);
+
+                            folder.delete();
+                        }
+                    }
+                } catch(IOException e) {
+                    System.err.println("Error copying file: " + e.getMessage());
+                }
+            }
         }
     }
 

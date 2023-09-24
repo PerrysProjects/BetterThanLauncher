@@ -83,6 +83,27 @@ public class Config {
         }
     }
 
+    public void writeComment(String text) {
+        try(BufferedReader reader = new BufferedReader(new FileReader(filePath)); BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            boolean commandExists = false;
+            String line;
+            while((line = reader.readLine()) != null) {
+                if(line.equals("#" + text)) {
+                    commandExists = true;
+                    break;
+                }
+            }
+
+            if(!commandExists) {
+                writer.write("#" + text);
+                writer.newLine();
+            }
+
+        } catch(IOException e) {
+            System.err.println("Error writing config: " + e.getMessage());
+        }
+    }
+
     public void writeConfig(Map<String, String> configMap) {
         try(BufferedReader reader = new BufferedReader(new FileReader(filePath)); BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             for(Map.Entry<String, String> entry : configMap.entrySet()) {
@@ -105,26 +126,6 @@ public class Config {
             System.err.println("Error writing config: " + e.getMessage());
         }
     }
-
-    /*public void writeConfig(String key, String value) {
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(key + ": " + value);
-            writer.newLine();
-        } catch(IOException e) {
-            System.err.println("Error writing config: " + e.getMessage());
-        }
-    }
-
-    public void writeConfig(Map<String, String> configMap) {
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            for(Map.Entry<String, String> entry : configMap.entrySet()) {
-                writer.write(entry.getKey() + ": " + entry.getValue());
-                writer.newLine();
-            }
-        } catch(IOException e) {
-            System.err.println("Error writing config: " + e.getMessage());
-        }
-    }*/
 
     public Object getValue(String key) {
         return configMap.get(key);
