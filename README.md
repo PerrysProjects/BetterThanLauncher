@@ -20,15 +20,15 @@ If you encounter any issues, have suggestions, or need assistance, please create
 ## TODO List
 
 - **Babric Integration**:
-  [ ] Implement the option to select Babric as the modloader when creating instances.
+  - [ ] Implement the option to select Babric as the modloader when creating instances.
 - **Individual Instance Folders**:
-  [ ] Modify the instance creation process to generate individual folders for each instance, allowing for organized instance management.
+  - [ ] Modify the instance creation process to generate individual folders for each instance, allowing for organized instance management.
 - **Microsoft Authentication**:
-  [ ] Integrate Microsoft authentication to enhance security and user authentication for the launcher.
+  - [ ] Integrate Microsoft authentication to enhance security and user authentication for the launcher.
 - **Open Instance Folder Button**:
-  [ ] Add a button within the launcher to open the folder associated with a selected instance, facilitating easy access to instance files.
+  - [ ] Add a button within the launcher to open the folder associated with a selected instance, facilitating easy access to instance files.
 - **Delete Instance Functionality**:
-  [ ] Implement a feature to delete instances directly from the launcher, providing a convenient way for users to manage their instances.
+  - [ ] Implement a feature to delete instances directly from the launcher, providing a convenient way for users to manage their instances.
 
 ## License
 This project is licensed under Apache 2. For more information see [here](https://github.com/DaPlatypus26/BetterThanLauncher/blob/main/LICENSE).
