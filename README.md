@@ -31,4 +31,4 @@ If you encounter any issues, have suggestions, or need assistance, please create
   [ ] Implement a feature to delete instances directly from the launcher, providing a convenient way for users to manage their instances.
 
 ## License
-This project is licensed under apache 2. For more information see [here](https://github.com/DaPlatypus26/BetterThanLauncher/blob/main/LICENSE).
+This project is licensed under Apache 2. For more information see [here](https://github.com/DaPlatypus26/BetterThanLauncher/blob/main/LICENSE).
