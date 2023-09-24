@@ -363,6 +363,9 @@ public class Frame extends JFrame {
                 Instance instance = Main.instances.get(instanceName);
 
                 createInstancePanel(instance);
+            } else {
+                JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.",
+                        "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -379,35 +382,34 @@ public class Frame extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
 
             if(selectedFile.getName().endsWith(".zip") && ZipTool.containFile(selectedFile.toString(), "instance.conf")) {
-                try {
-                    File folder = new File(Main.path + "/instances/" + selectedFile.getName().split("\\.")[0]);
-                    if(!folder.exists()) {
-                        if(!folder.mkdirs()) {
-                            System.err.println("Failed to create folder for instance: " + selectedFile.getName().split("\\.")[0]);
-                        }
+                File folder = new File(Main.path + "/instances/" + selectedFile.getName().split("\\.")[0]);
+                if(!folder.exists() || folder.listFiles() == null) {
+                    folder.mkdirs();
 
-                        Path sourcePath = Paths.get(selectedFile.toURI());
-                        Path targetPath = Paths.get(Main.path + "/instances/" + selectedFile.getName().split("\\.")[0] + "/" + selectedFile.getName());
+                    Path sourcePath = Paths.get(selectedFile.toURI());
+                    Path targetPath = Paths.get(folder.getPath() + "/" + selectedFile.getName());
 
+                    try {
                         Files.copy(sourcePath, targetPath);
                         ZipTool.extract(targetPath.toString(), folder.getPath());
 
                         Config config = new Config(folder.getPath() + "/instance.conf");
-                        String instanceName = String.valueOf(config.getValue("name"));
                         String instanceVersion = String.valueOf(config.getValue("version"));
 
-                        if(!Main.instances.containsKey(instanceName)) {
-                            Instance.createInstance(instanceName, Versions.fileNameToVersion(instanceVersion));
-                            Instance instance = Main.instances.get(instanceName);
+                        Instance.createInstance(folder.getName(), Versions.fileNameToVersion(instanceVersion));
+                        Instance instance = Main.instances.get(folder.getName());
 
-                            createInstancePanel(instance);
-
-                            folder.delete();
-                        }
+                        createInstancePanel(instance);
+                    } catch(IOException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch(IOException e) {
-                    System.err.println("Error copying file: " + e.getMessage());
+                } else {
+                    JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.",
+                            "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "The selected file is not a compatible BTL instance in .zip format.",
+                        "Invalid File Format", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

@@ -31,20 +31,31 @@ public class ZipTool {
     }
 
     public static void extract(String zipFilePath, String extractPath) {
-        File destDir = new File(extractPath);
         byte[] buffer = new byte[1024];
 
         try(ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
             ZipEntry zipEntry = zipInputStream.getNextEntry();
 
             while(zipEntry != null) {
-                File newFile = newFile(destDir, zipEntry);
-                try(FileOutputStream fos = new FileOutputStream(newFile)) {
-                    int len;
-                    while((len = zipInputStream.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
+                String entryName = zipEntry.getName();
+                File newFile = new File(extractPath, entryName);
+
+                if(zipEntry.isDirectory()) {
+                    newFile.mkdirs();
+                } else {
+                    File parent = newFile.getParentFile();
+                    if(parent != null && !parent.exists()) {
+                        parent.mkdirs();
+                    }
+
+                    try(FileOutputStream fos = new FileOutputStream(newFile)) {
+                        int len;
+                        while((len = zipInputStream.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
                     }
                 }
+
                 zipEntry = zipInputStream.getNextEntry();
             }
 
@@ -52,6 +63,7 @@ public class ZipTool {
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
+
         delete(zipFilePath);
     }
 

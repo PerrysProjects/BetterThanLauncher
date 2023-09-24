@@ -21,34 +21,17 @@ public class Instance {
     private Config config;
 
     public Instance(String name) {
-        this.name = null;
-        version = null;
-        icon = null;
-        path = null;
-        config = null;
+        File instanceFolder = new File(Main.path + "/instances/" + name);
 
-        String instancesPath = Main.path + "/instances";
-        File parentDirectory = new File(instancesPath);
-        File[] files = parentDirectory.listFiles();
-        if(files != null) {
-            for(File file : files) {
-                if(file.isDirectory()) {
-                    if(new File(file.getPath() + "/instance.conf").exists()) {
-                        Config config = new Config(file.getPath() + "/instance.conf");
-                        if(String.valueOf(config.getValue("name")).equals(name)) {
-                            this.name = name;
-                            path = file.getPath();
-                            config = new Config(path + "/instance.conf");
-                            version = Versions.fileNameToVersion((String) config.getValue("version"));
-                            if(!new File(path + "/icon.png").exists()) {
-                                ResTool.copy("icons/icon.png", path);
-                            }
-                            icon = new ImageIcon(path + "/icon.png");
-                        }
-                    }
-                }
-            }
+        this.name = name;
+        path = instanceFolder.getPath();
+        config = new Config(instanceFolder.getPath() + "/instance.conf");
+
+        version = Versions.fileNameToVersion((String) config.getValue("version"));
+        if(!new File(path + "/icon.png").exists()) {
+            ResTool.copy("icons/icon.png", path);
         }
+        icon = new ImageIcon(path + "/icon.png");
     }
 
     public void start() {
@@ -85,37 +68,26 @@ public class Instance {
     }
 
     public static void createInstance(String name, Versions version) {
-        if(Main.instances == null || !Main.instances.containsKey(name)) {
-            String path = Main.path + "/instances/";
-            File instanceFolder = new File(path + name);
+        String path = Main.path + "/instances/";
+        File instanceFolder = new File(path + name);
 
-            if(!instanceFolder.exists() || (instanceFolder.listFiles() != null && instanceFolder.listFiles().length == 0)) {
-                instanceFolder.mkdirs();
-            } else {
-                int count = 1;
-                while(true) {
-                    String newName = name + " (" + count + ")";
-                    File newFolder = new File(path + newName);
-                    if(!newFolder.exists()) {
-                        instanceFolder = newFolder;
-                        break;
-                    }
-                    count++;
-                }
-                instanceFolder.mkdirs();
-            }
-
-            JarMerger jarMerger = new JarMerger();
-            jarMerger.merge(Main.path + "/versions/" + version.toString().toLowerCase() + "/" + version.getFileName() + ".jar", Main.path + "/versions/" + Versions.B_1_7_3.toString().toLowerCase() + "/" + Versions.B_1_7_3.getFileName() + ".jar", instanceFolder.getPath() + "/minecraft.jar");
-
-            Config config = new Config(instanceFolder.getPath(), "instance", "conf");
-            config.writeConfig("name", name);
-            config.writeConfig("version", version.getFileName());
-
-            ResTool.copy("icons/icon.png", instanceFolder.getPath());
-
-            Main.instances = getInstances();
+        if(!instanceFolder.exists() || instanceFolder.listFiles() == null) {
+            instanceFolder.mkdirs();
         }
+
+        JarMerger jarMerger = new JarMerger();
+        if(!new File(instanceFolder.getPath() + "/minecraft.jar").exists()) {
+            jarMerger.merge(Main.path + "/versions/" + version.toString().toLowerCase() + "/" + version.getFileName() + ".jar",
+                    Main.path + "/versions/" + Versions.B_1_7_3.toString().toLowerCase() + "/" + Versions.B_1_7_3.getFileName() + ".jar",
+                    instanceFolder.getPath() + "/minecraft.jar");
+        }
+
+        Config config = new Config(instanceFolder.getPath(), "instance", "conf");
+        config.writeConfig("version", version.getFileName());
+
+        ResTool.copy("icons/icon.png", instanceFolder.getPath());
+
+        Main.instances = getInstances();
     }
 
     public static Map<String, Instance> getInstances() {
@@ -128,12 +100,8 @@ public class Instance {
 
         if(files != null) {
             for(File file : files) {
-                if(file.isDirectory()) {
-                    if(new File(file.getPath() + "/instance.conf").exists()) {
-                        Config config = new Config(file.getPath() + "/instance.conf");
-                        String instanceName = String.valueOf(config.getValue("name"));
-                        instances.put(instanceName, new Instance(instanceName));
-                    }
+                if(file.isDirectory() && new File(file.getPath() + "/instance.conf").exists()) {
+                    instances.put(file.getName(), new Instance(file.getName()));
                 }
             }
         }
