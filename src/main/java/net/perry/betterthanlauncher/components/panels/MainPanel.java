@@ -148,7 +148,7 @@ public class MainPanel extends JPanel {
         centerScrollPane.setEnabled(true);
 
         bottomBar = new JPanel();
-        bottomBar.setBackground(Color.green);
+        bottomBar.setBackground(null);
         bottomBar.setPreferredSize(new Dimension(getWidth(), 25));
         bottomBar.setLayout(new BoxLayout(bottomBar, BoxLayout.X_AXIS));
 
