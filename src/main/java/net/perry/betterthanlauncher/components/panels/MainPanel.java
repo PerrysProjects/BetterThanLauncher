@@ -174,8 +174,10 @@ public class MainPanel extends JPanel {
             Logger.error(e);
         }
 
-        JLabel skinLabel = new JLabel(skinImage, SwingConstants.LEFT);
+        JLabel skinLabel = new JLabel(loadedProfile.name(), skinImage, SwingConstants.LEFT);
         skinLabel.setForeground(theme.getText());
+        skinLabel.setHorizontalTextPosition(JLabel.CENTER);
+        skinLabel.setVerticalTextPosition(JLabel.TOP);
         skinLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         JLabel nameLabel = new JLabel("Name: " + loadedProfile.name());
