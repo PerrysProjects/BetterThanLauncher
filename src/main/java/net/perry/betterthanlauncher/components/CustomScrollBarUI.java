@@ -1,14 +1,19 @@
 package net.perry.betterthanlauncher.components;
 
-import net.perry.betterthanlauncher.Frame;
-
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 
 public class CustomScrollBarUI extends BasicScrollBarUI {
+    private Color track;
+    private Color thumb;
 
     private final Dimension d = new Dimension();
+
+    public CustomScrollBarUI(Color track, Color thumb) {
+        this.track = track;
+        this.thumb = thumb;
+    }
 
     @Override
     protected JButton createDecreaseButton(int orientation) {
@@ -40,10 +45,13 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setPaint(Frame.getTheme().getComponents2());
+
+        g2.setPaint(track);
         g2.fillRect(r.x, r.y, r.width, r.height);
-        g2.setPaint(Frame.getTheme().getComponents2());
+
+        g2.setPaint(track);
         g2.drawRect(r.x, r.y, r.width, r.height);
+
         g2.dispose();
     }
 
@@ -51,10 +59,13 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setPaint(Frame.getTheme().getComponents3());
+
+        g2.setPaint(thumb);
         g2.fillRoundRect(r.x, r.y, r.width, r.height, 10, 10);
-        g2.setPaint(Frame.getTheme().getComponents3());
+
+        g2.setPaint(thumb);
         g2.drawRoundRect(r.x, r.y, r.width, r.height, 10, 10);
+
         g2.dispose();
     }
 

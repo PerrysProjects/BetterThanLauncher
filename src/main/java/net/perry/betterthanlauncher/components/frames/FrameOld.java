@@ -1,12 +1,13 @@
-package net.perry.betterthanlauncher;
+package net.perry.betterthanlauncher.components.frames;
 
+import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.components.CustomScrollBarUI;
 import net.perry.betterthanlauncher.instances.Instance;
 import net.perry.betterthanlauncher.instances.Themes;
 import net.perry.betterthanlauncher.instances.Versions;
 import net.perry.betterthanlauncher.util.files.Config;
-import net.perry.betterthanlauncher.util.files.ImageTool;
-import net.perry.betterthanlauncher.util.files.ZipTool;
+import net.perry.betterthanlauncher.util.tool.ImageTool;
+import net.perry.betterthanlauncher.util.tool.ZipTool;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -22,11 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-public class Frame extends JFrame {
-    private JPanel center;
+public class FrameOld extends JFrame {
     private static Themes theme;
 
-    public Frame() {
+    public FrameOld() {
         Config config = Main.config;
         theme = Themes.DARK;
 
@@ -65,16 +65,17 @@ public class Frame extends JFrame {
         contentPanel.setBackground(theme.getBackground());
         contentPanel.setLayout(new BorderLayout());
 
-        JPanel sidebar = createSidebarPanel();
-        JPanel topBar = createTopBarPanel();
         JPanel center = createCenterPanel();
+        JPanel sidebar = createSidebarPanel();
+        JPanel topBar = createTopBarPanel(center);
 
         JScrollPane scrollPane = new JScrollPane(center);
         scrollPane.setBackground(null);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(null);
-        ((JScrollBar) scrollPane.getComponent(1)).setUI(new CustomScrollBarUI());
+        ((JScrollBar) scrollPane.getComponent(1)).setUI(new CustomScrollBarUI(Color.gray, Color.blue));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setEnabled(true);
 
         contentPanel.add(sidebar, BorderLayout.EAST);
         contentPanel.add(topBar, BorderLayout.NORTH);
@@ -87,10 +88,11 @@ public class Frame extends JFrame {
         JPanel sidebar = new JPanel();
         sidebar.setBackground(null);
         sidebar.setPreferredSize(new Dimension(150, getHeight()));
+
         return sidebar;
     }
 
-    private JPanel createTopBarPanel() {
+    private JPanel createTopBarPanel(JPanel parent) {
         JPanel topBar = new JPanel();
         topBar.setBackground(null);
         topBar.setPreferredSize(new Dimension(getWidth(), 60));
@@ -131,7 +133,7 @@ public class Frame extends JFrame {
         createButton.setBackground(null);
         createButton.setForeground(theme.getText());
         createButton.setBorder(BorderFactory.createEmptyBorder());
-        createButton.addActionListener(e -> createInstanceAction());
+        createButton.addActionListener(e -> createInstanceAction(parent));
         createButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -174,7 +176,7 @@ public class Frame extends JFrame {
         importButton.setBackground(null);
         importButton.setForeground(theme.getText());
         importButton.setBorder(BorderFactory.createEmptyBorder());
-        importButton.addActionListener(e -> importInstanceAction());
+        importButton.addActionListener(e -> importInstanceAction(parent));
         importButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -197,18 +199,18 @@ public class Frame extends JFrame {
     }
 
     private JPanel createCenterPanel() {
-        center = new JPanel();
+        JPanel center = new JPanel();
         center.setBackground(null);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 
         for(Instance instance : Main.instances.values()) {
-            createInstancePanel(instance);
+            createInstancePanel(instance, center);
         }
 
         return center;
     }
 
-    private void createInstancePanel(Instance instance) {
+    private void createInstancePanel(Instance instance, JPanel parent) {
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -258,9 +260,9 @@ public class Frame extends JFrame {
                 int height = getHeight() - 10;
 
                 g2.setColor(theme.getShadow());
-                g2.fillRoundRect(-20, 5, width + 3, height + 3, radius + 3, radius + 3);
+                g2.fillRoundRect(-10, 5, width + 3, height + 3, radius + 3, radius + 3);
                 g2.setColor(theme.getComponents());
-                g2.fillRoundRect(-20, 5, width, height, radius, radius);
+                g2.fillRoundRect(-10, 5, width, height, radius, radius);
             }
         };
         play.setLayout(null);
@@ -319,13 +321,13 @@ public class Frame extends JFrame {
         panel.add(icon, BorderLayout.CENTER);
         panel.add(play, BorderLayout.EAST);
 
-        center.add(panel);
+        parent.add(panel);
 
-        center.revalidate();
-        center.repaint();
+        parent.revalidate();
+        parent.repaint();
     }
 
-    private void createInstanceAction() {
+    private void createInstanceAction(JPanel parent) {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 2));
         panel.setBackground(theme.getBackground());
@@ -362,15 +364,14 @@ public class Frame extends JFrame {
                 Instance.createInstance(instanceName, Versions.fileNameToVersion(selectedVersion));
                 Instance instance = Main.instances.get(instanceName);
 
-                createInstancePanel(instance);
+                createInstancePanel(instance, parent);
             } else {
-                JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.",
-                        "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.", "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    private void importInstanceAction() {
+    private void importInstanceAction(JPanel parent) {
         JFileChooser fileChooser = new JFileChooser();
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("ZIP Files", "zip");
@@ -399,17 +400,15 @@ public class Frame extends JFrame {
                         Instance.createInstance(folder.getName(), Versions.fileNameToVersion(instanceVersion));
                         Instance instance = Main.instances.get(folder.getName());
 
-                        createInstancePanel(instance);
+                        createInstancePanel(instance, parent);
                     } catch(IOException e) {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.",
-                            "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.", "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "The selected file is not a compatible BTL instance in .zip format.",
-                        "Invalid File Format", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "The selected file is not a compatible BTL instance in .zip format.", "Invalid File Format", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

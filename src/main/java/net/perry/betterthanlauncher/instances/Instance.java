@@ -2,8 +2,8 @@ package net.perry.betterthanlauncher.instances;
 
 import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.util.files.Config;
-import net.perry.betterthanlauncher.util.files.ResTool;
-import net.perry.betterthanlauncher.util.jars.JarMerger;
+import net.perry.betterthanlauncher.util.tool.ResTool;
+import net.perry.betterthanlauncher.util.tool.JarTool;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -14,36 +14,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Instance {
+    private String path;
+
     private String name;
+    private String instancePath;
+    private Config config;
     private Versions version;
     private ImageIcon icon;
-    private String path;
-    private Config config;
 
     public Instance(String name) {
-        File instanceFolder = new File(Main.path + "/instances/" + name);
+        path = Main.path;
 
         this.name = name;
-        path = instanceFolder.getPath();
+
+        File instanceFolder = new File(path + "/instances/" + name);
+        instancePath = instanceFolder.getPath();
+
         config = new Config(instanceFolder.getPath() + "/instance.conf");
 
         version = Versions.fileNameToVersion((String) config.getValue("version"));
-        if(!new File(path + "/icon.png").exists()) {
-            ResTool.copy("icons/icon.png", path);
+        if(!new File(instancePath + "/icon.png").exists()) {
+            ResTool.copy("icons/icon.png", instancePath);
         }
-        icon = new ImageIcon(path + "/icon.png");
+        icon = new ImageIcon(instancePath + "/icon.png");
     }
 
     public void start() {
         Thread minecraftThread = new Thread(() -> {
             String javaExecutable = "java";
             String memoryOptions = "-Xms256m -Xmx256m";
-            String classpath = path + "/minecraft.jar;" + Main.path + "/libraries/jinput.jar;" + Main.path + "/libraries/lwjgl.jar;" + Main.path + "/libraries/lwjgl_util.jar";
-            String libraryPath = "-Djava.library.path=" + Main.path + "/libraries/natives";
+            String classpath = instancePath + "/minecraft.jar;" + path + "/libraries/jinput.jar;" + path + "/libraries/lwjgl.jar;" + path + "/libraries/lwjgl_util.jar";
+            String libraryPath = "-Djava.library.path=" + path + "/libraries/natives";
             String mainClass = "net.minecraft.client.Minecraft";
-            String username = "Perry6226";
-            String gameArguments = "--gameDir " + path + " --assetDir " + path;
-            String command = (javaExecutable + " " + memoryOptions + " -cp \"" + classpath + "\" " + libraryPath + " " + mainClass + " " + username + " " + gameArguments).replace("/", "\\");
+            String username = Main.auth.getLoadedProfile().name();
+            String sessionID = Main.auth.getLoadedProfile().prevResult().prevResult().access_token();
+            String gameArguments = "--gameDir " + instancePath + " --assetDir " + instancePath;
+            String command = (javaExecutable + " " + memoryOptions + " -cp \"" + classpath + "\" " + libraryPath + " " + mainClass + " " + username + " " + sessionID + " " + gameArguments).replace("/", "\\");
 
             System.out.println("Instance " + name + " started with following startup command:");
             System.out.println(command);
@@ -68,17 +74,17 @@ public class Instance {
     }
 
     public static void createInstance(String name, Versions version) {
-        String path = Main.path + "/instances/";
-        File instanceFolder = new File(path + name);
+        String path = Main.path;
+        File instanceFolder = new File(path + "/instances/" + name);
 
         if(!instanceFolder.exists() || instanceFolder.listFiles() == null) {
             instanceFolder.mkdirs();
         }
 
-        JarMerger jarMerger = new JarMerger();
+        JarTool jarMerger = new JarTool();
         if(!new File(instanceFolder.getPath() + "/minecraft.jar").exists()) {
-            jarMerger.merge(Main.path + "/versions/" + version.toString().toLowerCase() + "/" + version.getFileName() + ".jar",
-                    Main.path + "/versions/" + Versions.B_1_7_3.toString().toLowerCase() + "/" + Versions.B_1_7_3.getFileName() + ".jar",
+            jarMerger.merge(path + "/versions/" + version.toString().toLowerCase() + "/" + version.getFileName() + ".jar",
+                    path + "/versions/" + Versions.B_1_7_3.toString().toLowerCase() + "/" + Versions.B_1_7_3.getFileName() + ".jar",
                     instanceFolder.getPath() + "/minecraft.jar");
         }
 
@@ -121,8 +127,8 @@ public class Instance {
         return icon;
     }
 
-    public String getPath() {
-        return path;
+    public String getInstancePath() {
+        return instancePath;
     }
 
     public Config getConfig() {

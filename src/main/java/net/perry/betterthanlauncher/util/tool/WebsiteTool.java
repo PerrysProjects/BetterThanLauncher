@@ -1,4 +1,4 @@
-package net.perry.betterthanlauncher.util;
+package net.perry.betterthanlauncher.util.tool;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

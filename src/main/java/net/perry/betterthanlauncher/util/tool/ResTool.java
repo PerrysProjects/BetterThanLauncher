@@ -1,4 +1,4 @@
-package net.perry.betterthanlauncher.util.files;
+package net.perry.betterthanlauncher.util.tool;
 
 import org.codehaus.plexus.util.FileUtils;
 

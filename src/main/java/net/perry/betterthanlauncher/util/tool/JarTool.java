@@ -1,4 +1,4 @@
-package net.perry.betterthanlauncher.util.jars;
+package net.perry.betterthanlauncher.util.tool;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,11 +9,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
-public class JarMerger {
+public class JarTool {
 
     private Map<String, Boolean> entryMap;
 
-    public JarMerger() {
+    public JarTool() {
         entryMap = new HashMap<>();
     }
 
