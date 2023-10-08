@@ -19,6 +19,8 @@ public class Auth {
     private StepMCProfile.MCProfile loadedProfile;
     private File file;
 
+    private AuthFrame authFrame;
+
     public Auth() {
         file = new File(Main.path + "/profile.json");
         if(file.exists()) {
@@ -35,7 +37,7 @@ public class Auth {
         StepMCProfile.MCProfile mcProfile = null;
         try(final CloseableHttpClient httpClient = MicrosoftConstants.createHttpClient()) {
             mcProfile = MinecraftAuth.JAVA_DEVICE_CODE_LOGIN.getFromInput(httpClient, new StepMsaDeviceCode.MsaDeviceCodeCallback(msaDeviceCode -> {
-                AuthFrame authFrame = new AuthFrame(msaDeviceCode);
+                authFrame = new AuthFrame(msaDeviceCode);
             }));
         } catch(Exception e) {
             System.exit(80);
@@ -51,6 +53,8 @@ public class Auth {
         } catch(Exception e) {
             Logger.error(e);
         }
+
+        authFrame.dispose();
     }
 
     public StepMCProfile.MCProfile getLoadedProfile() {
