@@ -1,10 +1,8 @@
 package net.perry.betterthanlauncher.components.panels;
 
-import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.components.RoundButton;
 import net.perry.betterthanlauncher.instances.Themes;
 import net.perry.betterthanlauncher.util.Logger;
-import net.perry.betterthanlauncher.util.files.Config;
 import net.raphimc.mcauth.step.msa.StepMsaDeviceCode;
 
 import javax.swing.*;
@@ -14,18 +12,11 @@ import java.awt.datatransfer.StringSelection;
 import java.net.URI;
 
 public class AuthPanel extends JPanel {
-    private Config config;
-    private Themes theme;
     StepMsaDeviceCode.MsaDeviceCode msaDeviceCode;
 
     public AuthPanel(StepMsaDeviceCode.MsaDeviceCode msaDeviceCode) {
-        config = Main.config;
-        theme = Themes.DARK;
+        Themes theme = Themes.DARK;
         this.msaDeviceCode = msaDeviceCode;
-
-        if(config.getValue("theme") != null) {
-            theme = Themes.valueOf(String.valueOf(config.getValue("theme")).toUpperCase());
-        }
 
         setBackground(theme.getBackground());
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

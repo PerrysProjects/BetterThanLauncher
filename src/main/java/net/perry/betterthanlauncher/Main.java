@@ -1,5 +1,6 @@
 package net.perry.betterthanlauncher;
 
+import net.perry.betterthanlauncher.components.frames.ConnectionFrame;
 import net.perry.betterthanlauncher.components.frames.Frame;
 import net.perry.betterthanlauncher.components.panels.MainPanel;
 import net.perry.betterthanlauncher.instances.Instance;
@@ -38,26 +39,25 @@ public class Main extends JFrame {
         version = "1.0";
 
         if(!isConnectedToInternet()) {
-            JOptionPane.showMessageDialog(null, "Unable to establish an internet connection. Please check your network settings and try again.", "Internet Connection Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(50);
+            ConnectionFrame connectionFrame = new ConnectionFrame();
+        } else {
+            loadFiles();
+
+            instances = Instance.getInstances();
+
+            Instance.createInstance("Vanilla Beta 1.7.3", Versions.B_1_7_3);
+            Instance.createInstance("Latest BTA version", Versions.values()[0]);
+
+            auth = new Auth();
+            while(auth.getLoadedProfile() == null) {
+                auth.codeLogIn();
+            }
+
+            SwingUtilities.invokeAndWait(() -> {
+                frame = new Frame();
+                frame.setContentPane(new MainPanel());
+            });
         }
-
-        loadFiles();
-
-        instances = Instance.getInstances();
-
-        Instance.createInstance("Vanilla Beta 1.7.3", Versions.B_1_7_3);
-        Instance.createInstance("Latest BTA version", Versions.values()[0]);
-
-        auth = new Auth();
-        while(auth.getLoadedProfile() == null) {
-            auth.codeLogIn();
-        }
-
-        SwingUtilities.invokeAndWait(() -> {
-            frame = new Frame();
-            frame.setContentPane(new MainPanel());
-        });
     }
 
     public static void restart() {

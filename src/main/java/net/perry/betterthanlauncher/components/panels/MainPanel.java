@@ -294,11 +294,13 @@ public class MainPanel extends JPanel {
             if(!nameField.getText().equals("Enter name") && addInstance(nameField.getText(), Versions.fileNameToVersion(Objects.requireNonNull(versionComboBox.getSelectedItem()).toString()))) {
                 nameField.setText("Enter name");
                 versionComboBox.setSelectedIndex(0);
+            } else {
+                nameField.setForeground(Color.decode("#ed4337"));
             }
         });
 
         RoundButton importButton = new RoundButton("Import", theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
-        importButton.setBounds(293, 180, 60, 40);
+        importButton.setBounds(293, 160, 60, 40);
         importButton.setMaximumSize(new Dimension(60, 40));
         importButton.setMinimumSize(new Dimension(60, 40));
         importButton.setPreferredSize(new Dimension(60, 40));
@@ -560,7 +562,6 @@ public class MainPanel extends JPanel {
             createCenterPanel();
             changePanel(centerScrollPane);
         } else {
-            JOptionPane.showMessageDialog(null, "An instance with the same name already exists. Please choose a unique name for this instance.", "Duplicate Instance Name", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;

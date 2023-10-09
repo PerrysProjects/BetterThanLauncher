@@ -1,9 +1,8 @@
 package net.perry.betterthanlauncher.components.frames;
 
 import net.perry.betterthanlauncher.Main;
-import net.perry.betterthanlauncher.components.panels.AuthPanel;
+import net.perry.betterthanlauncher.components.panels.ConnectionPanel;
 import net.perry.betterthanlauncher.util.Logger;
-import net.raphimc.mcauth.step.msa.StepMsaDeviceCode;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,11 +10,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 
-public class AuthFrame extends JFrame {
-    public AuthFrame(StepMsaDeviceCode.MsaDeviceCode msaDeviceCode) {
+public class ConnectionFrame extends JFrame {
+    public ConnectionFrame() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setTitle(Main.name + " Authentication");
-        setContentPane(new AuthPanel(msaDeviceCode));
+        setTitle(Main.name + " Connection");
+        setContentPane(new ConnectionPanel());
         pack();
         setSize(400, 300);
         setResizable(false);
