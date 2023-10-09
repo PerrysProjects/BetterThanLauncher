@@ -1,7 +1,7 @@
 package net.perry.betterthanlauncher.components.frames;
 
 import net.perry.betterthanlauncher.Main;
-import net.perry.betterthanlauncher.components.CustomScrollBarUI;
+import net.perry.betterthanlauncher.components.uis.CustomScrollBarUI;
 import net.perry.betterthanlauncher.instances.Instance;
 import net.perry.betterthanlauncher.instances.Themes;
 import net.perry.betterthanlauncher.instances.Versions;

@@ -1,4 +1,4 @@
-package net.perry.betterthanlauncher.components;
+package net.perry.betterthanlauncher.components.uis;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;

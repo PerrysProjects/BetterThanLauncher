@@ -1,6 +1,7 @@
 package net.perry.betterthanlauncher.instances;
 
 import net.perry.betterthanlauncher.Main;
+import net.perry.betterthanlauncher.util.Logger;
 import net.perry.betterthanlauncher.util.files.Config;
 import net.perry.betterthanlauncher.util.tool.ResTool;
 import net.perry.betterthanlauncher.util.tool.JarTool;
@@ -66,7 +67,7 @@ public class Instance {
                 int exitCode = process.waitFor();
                 System.out.println("Minecraft exited with Exit Code: " + exitCode);
             } catch(IOException | InterruptedException e) {
-                e.printStackTrace();
+                Logger.error(e);
             }
         });
 

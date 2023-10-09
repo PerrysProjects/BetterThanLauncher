@@ -14,6 +14,7 @@ import net.perry.betterthanlauncher.util.tool.ZipTool;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -32,9 +33,7 @@ public class Main extends JFrame {
 
     public static Frame frame;
 
-    public static Runnable frameRun;
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
         name = "BetterThanLauncher";
         version = "1.0";
 
@@ -55,12 +54,10 @@ public class Main extends JFrame {
             auth.codeLogIn();
         }
 
-        frameRun = () -> {
+        SwingUtilities.invokeAndWait(() -> {
             frame = new Frame();
             frame.setContentPane(new MainPanel());
-        };
-
-        SwingUtilities.invokeLater(frameRun);
+        });
     }
 
     public static void restart() {
