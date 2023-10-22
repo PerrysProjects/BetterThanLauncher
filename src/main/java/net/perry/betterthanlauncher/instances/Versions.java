@@ -8,6 +8,7 @@ public enum Versions {
 
     private String fileName;
     private String link;
+    private String babric;
 
     Versions(String fileName, String link) {
         this.fileName = fileName;
@@ -20,6 +21,10 @@ public enum Versions {
 
     public String getLink() {
         return link;
+    }
+
+    public String getBabric() {
+        return babric;
     }
 
     public static Versions fileNameToVersion(String name) {

@@ -11,6 +11,6 @@ public class Logger {
 
     public static String error(Exception e) {
         String date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Timestamp(System.currentTimeMillis()));
-        return System.out.printf("[%s] An error occurred: %s%n", date, e).toString();
+        return System.out.printf("[%s] An error occurred: %s%n", date, e.getMessage()).toString();
     }
 }

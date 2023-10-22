@@ -99,7 +99,8 @@ public class RoundButton extends JButton {
             switch(icon) {
                 case PLAY ->
                         Shapes.drawRoundCornerTriangle(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
-                case EDIT -> Shapes.drawFolder(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
+                case FOLDER -> Shapes.drawFolder(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
+                case EDIT -> Shapes.drawGear(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
                 case HOME -> Shapes.drawHouse(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
                 case ADD -> Shapes.drawPlus(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
             }

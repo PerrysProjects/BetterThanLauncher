@@ -22,6 +22,7 @@ public class Instance {
     private Config config;
     private Versions version;
     private ImageIcon icon;
+    private int memory;
 
     public Instance(String name) {
         path = Main.path;
@@ -38,12 +39,14 @@ public class Instance {
             ResTool.copy("icons/icon.png", instancePath);
         }
         icon = new ImageIcon(instancePath + "/icon.png");
+
+        memory = (int) config.getValue("memory");
     }
 
     public void start() {
         Thread minecraftThread = new Thread(() -> {
             String javaExecutable = "java";
-            String memoryOptions = "-Xms256m -Xmx256m";
+            String memoryOptions = "-Xms" + memory + "m -Xmx" + memory + "m";
             String classpath = instancePath + "/minecraft.jar;" + path + "/libraries/jinput.jar;" + path + "/libraries/lwjgl.jar;" + path + "/libraries/lwjgl_util.jar";
             String libraryPath = "-Djava.library.path=" + path + "/libraries/natives";
             String mainClass = "net.minecraft.client.Minecraft";
@@ -91,6 +94,7 @@ public class Instance {
 
         Config config = new Config(instanceFolder.getPath(), "instance", "conf");
         config.writeConfig("version", version.getFileName());
+        config.writeConfig("memory", "1024");
 
         ResTool.copy("icons/icon.png", instanceFolder.getPath());
 
@@ -134,6 +138,15 @@ public class Instance {
 
     public Config getConfig() {
         return config;
+    }
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
+        config.setValue("memory", String.valueOf(memory));
     }
 }
 

@@ -1,5 +1,7 @@
 package net.perry.betterthanlauncher.util.files;
 
+import net.perry.betterthanlauncher.util.Logger;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,18 +28,17 @@ public class Config {
             File configFile = new File(filePath);
             if(!configFile.exists()) {
                 if(!configFile.createNewFile()) {
-                    System.err.println("Failed to create config file: " + filePath);
+                    Logger.log("Failed to create config file: " + filePath);
                 }
             }
         } catch(IOException e) {
-            System.err.println("Error creating config file: " + e.getMessage());
+            Logger.error(e);
         }
     }
 
     private void readConfigFile() {
         File configFile = new File(filePath);
         if(!configFile.exists()) {
-            System.err.println("Config file not found: " + filePath);
             return;
         }
 
@@ -58,7 +59,34 @@ public class Config {
                 }
             }
         } catch(IOException e) {
-            e.printStackTrace();
+            Logger.error(e);
+        }
+    }
+
+    public void setValue(String key, String value) {
+        try {
+            configMap.put(key, value);
+
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            StringBuilder content = new StringBuilder();
+            String line;
+
+            while((line = reader.readLine()) != null) {
+                if(line.startsWith(key + ": ")) {
+                    content.append(key).append(": ").append(value).append(System.lineSeparator());
+                } else {
+                    content.append(line).append(System.lineSeparator());
+                }
+
+            }
+
+            reader.close();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write(content.toString());
+            writer.close();
+        } catch(IOException e) {
+            Logger.error(e);
         }
     }
 
@@ -79,7 +107,7 @@ public class Config {
             }
 
         } catch(IOException e) {
-            System.err.println("Error writing config: " + e.getMessage());
+            Logger.error(e);
         }
     }
 
@@ -100,7 +128,7 @@ public class Config {
             }
 
         } catch(IOException e) {
-            System.err.println("Error writing config: " + e.getMessage());
+            Logger.error(e);
         }
     }
 
@@ -123,7 +151,7 @@ public class Config {
             }
 
         } catch(IOException e) {
-            System.err.println("Error writing config: " + e.getMessage());
+            Logger.error(e);
         }
     }
 
