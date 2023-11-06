@@ -3,6 +3,7 @@ package net.perry.betterthanlauncher.components.panels;
 import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.components.Icons;
 import net.perry.betterthanlauncher.components.RoundButton;
+import net.perry.betterthanlauncher.components.RoundCheckBox;
 import net.perry.betterthanlauncher.components.RoundPanel;
 import net.perry.betterthanlauncher.components.uis.CustomComboBoxUI;
 import net.perry.betterthanlauncher.components.uis.CustomScrollBarUI;
@@ -167,10 +168,19 @@ public class MainPanel extends JPanel {
         Dimension btaModdingMaxSize = new Dimension(25, topBar.getHeight());
         Box.Filler btaModdingFiller = new Box.Filler(btaModdingMinSize, btaModdingPrefSize, btaModdingMaxSize);
 
-        RoundButton btaModding = new RoundButton("BTA Modding", theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
-        btaModding.setMaximumSize(new Dimension(100, 40));
-        btaModding.setMinimumSize(new Dimension(100, 40));
-        btaModding.setPreferredSize(new Dimension(100, 40));
+        ImageIcon discordIcon = null;
+        try {
+            BufferedImage discordBI = ImageIO.read(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("icons/discord_icon.png")));
+            discordIcon = new ImageIcon(discordBI.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+            discordIcon = ImageTool.addBackgroundColor(discordIcon, theme.getComponents4());
+        } catch(IOException e) {
+            Logger.error(e);
+        }
+
+        RoundButton btaModding = new RoundButton(Icons.GLOBUS, theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
+        btaModding.setMaximumSize(new Dimension(40, 40));
+        btaModding.setMinimumSize(new Dimension(40, 40));
+        btaModding.setPreferredSize(new Dimension(40, 40));
         btaModding.addActionListener(e -> {
             Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
             if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -183,36 +193,15 @@ public class MainPanel extends JPanel {
         });
         btaModding.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        Dimension btaDCMinSize = new Dimension(25, topBar.getHeight());
-        Dimension btaDCPrefSize = new Dimension(25, topBar.getHeight());
-        Dimension btaDCMaxSize = new Dimension(25, topBar.getHeight());
-        Box.Filler btaDCFiller = new Box.Filler(btaDCMinSize, btaDCPrefSize, btaDCMaxSize);
-
-        RoundButton btaDiscord = new RoundButton("BTA Discord", theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
-        btaDiscord.setMaximumSize(new Dimension(100, 40));
-        btaDiscord.setMinimumSize(new Dimension(100, 40));
-        btaDiscord.setPreferredSize(new Dimension(100, 40));
-        btaDiscord.addActionListener(e -> {
-            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-            if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    desktop.browse(URI.create("https://discord.com/invite/jvwD8BKq5e"));
-                } catch(Exception ex) {
-                    Logger.error(ex);
-                }
-            }
-        });
-        btaDiscord.setAlignmentY(Component.CENTER_ALIGNMENT);
-
         Dimension babricDCMinSize = new Dimension(72, topBar.getHeight());
         Dimension babricDCPrefSize = new Dimension(72, topBar.getHeight());
         Dimension babricDCMaxSize = new Dimension(72, topBar.getHeight());
         Box.Filler babricDCFiller = new Box.Filler(babricDCMinSize, babricDCPrefSize, babricDCMaxSize);
 
-        RoundButton babricDiscord = new RoundButton("Babric Discord", theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
-        babricDiscord.setMaximumSize(new Dimension(100, 40));
-        babricDiscord.setMinimumSize(new Dimension(100, 40));
-        babricDiscord.setPreferredSize(new Dimension(100, 40));
+        RoundButton babricDiscord = new RoundButton(discordIcon, theme.getComponents4(), theme.getComponents5(), theme.getBackground());
+        babricDiscord.setMaximumSize(new Dimension(40, 40));
+        babricDiscord.setMinimumSize(new Dimension(40, 40));
+        babricDiscord.setPreferredSize(new Dimension(40, 40));
         babricDiscord.addActionListener(e -> {
             Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
             if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -230,8 +219,8 @@ public class MainPanel extends JPanel {
         topBar.add(Box.createHorizontalGlue());
         topBar.add(btaModding);
         topBar.add(btaModdingFiller);
-        topBar.add(btaDiscord);
-        topBar.add(btaDCFiller);
+        //topBar.add(btaDiscord);
+        //topBar.add(btaDCFiller);
         topBar.add(babricDiscord);
         topBar.add(babricDCFiller);
 
@@ -270,7 +259,7 @@ public class MainPanel extends JPanel {
         createInstancePanel.setLayout(null);
 
         JTextField nameField = new JTextField();
-        nameField.setBounds(48, 115, 150, 30);
+        nameField.setBounds(48, 103, 150, 30);
         nameField.setMaximumSize(new Dimension(150, 30));
         nameField.setMinimumSize(new Dimension(150, 30));
         nameField.setPreferredSize(new Dimension(150, 30));
@@ -300,7 +289,7 @@ public class MainPanel extends JPanel {
             versionList[i] = Versions.values()[i].getFileName();
         }
         JComboBox<String> versionComboBox = new JComboBox<>(versionList);
-        versionComboBox.setBounds(48, 170, 150, 30);
+        versionComboBox.setBounds(48, 158, 150, 30);
         versionComboBox.setMaximumSize(new Dimension(150, 30));
         versionComboBox.setMinimumSize(new Dimension(150, 30));
         versionComboBox.setPreferredSize(new Dimension(150, 30));
@@ -308,13 +297,21 @@ public class MainPanel extends JPanel {
         versionComboBox.setForeground(theme.getText());
         versionComboBox.setUI(new CustomComboBoxUI(theme.getComponents2(), theme.getComponents2(), theme.getText(), theme.getComponents2()));
 
+        RoundCheckBox babricCheckBox = new RoundCheckBox("Babric", theme.getText(), theme.getComponents2(), theme.getComponents(), theme.getText());
+        babricCheckBox.setBounds(48, 213, 65, 20);
+        babricCheckBox.setMaximumSize(new Dimension(65, 20));
+        babricCheckBox.setMinimumSize(new Dimension(65, 20));
+        babricCheckBox.setPreferredSize(new Dimension(65, 20));
+        babricCheckBox.setBackground(null);
+        babricCheckBox.setForeground(theme.getText());
+
         RoundButton createInstanceButton = new RoundButton("Create", theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
-        createInstanceButton.setBounds(93, 225, 60, 40);
+        createInstanceButton.setBounds(93, 258, 60, 40);
         createInstanceButton.setMaximumSize(new Dimension(60, 40));
         createInstanceButton.setMinimumSize(new Dimension(60, 40));
         createInstanceButton.setPreferredSize(new Dimension(60, 40));
         createInstanceButton.addActionListener(e -> {
-            if(!nameField.getText().equals("Enter name") && addInstance(nameField.getText(), Versions.fileNameToVersion(Objects.requireNonNull(versionComboBox.getSelectedItem()).toString()))) {
+            if(!nameField.getText().equals("Enter name") && addInstance(nameField.getText(), Versions.fileNameToVersion(Objects.requireNonNull(versionComboBox.getSelectedItem()).toString()), babricCheckBox.isSelected())) {
                 nameField.setText("Enter name");
                 versionComboBox.setSelectedIndex(0);
             } else {
@@ -333,6 +330,7 @@ public class MainPanel extends JPanel {
 
         createInstancePanel.add(nameField);
         createInstancePanel.add(versionComboBox);
+        createInstancePanel.add(babricCheckBox);
         createInstancePanel.add(createInstanceButton);
         createInstancePanel.add(importButton);
 
@@ -435,7 +433,7 @@ public class MainPanel extends JPanel {
             Dimension nameMaxSize = new Dimension(25, height);
             Box.Filler nameFiller = new Box.Filler(nameMinSize, namePrefSize, nameMaxSize);
 
-            JLabel nameLabel = new JLabel(instance.getName());
+            JLabel nameLabel = new JLabel(instance.getDisplayName());
             nameLabel.setForeground(theme.getText());
             nameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
@@ -621,12 +619,12 @@ public class MainPanel extends JPanel {
             File selectedFile = fileChooser.getSelectedFile();
 
             if(selectedFile.getName().endsWith(".zip") && ZipTool.containFile(selectedFile.toString(), "instance.conf")) {
-                File folder = new File(path + "/instances/" + selectedFile.getName().replace(".zip", ""));
+                File folder = new File(path + "/instances/" + selectedFile.getName().replace(".zip", "").replaceAll(" ", "_"));
                 if(!folder.exists() || folder.listFiles() == null) {
                     folder.mkdirs();
 
                     Path sourcePath = Paths.get(selectedFile.toURI());
-                    Path targetPath = Paths.get(folder.getPath() + "/" + selectedFile.getName());
+                    Path targetPath = Paths.get(folder.getPath() + "/" + selectedFile.getName().replaceAll(" ", "_"));
 
                     try {
                         Files.copy(sourcePath, targetPath);
@@ -634,8 +632,9 @@ public class MainPanel extends JPanel {
 
                         Config config = new Config(folder.getPath() + "/instance.conf");
                         String instanceVersion = String.valueOf(config.getValue("version"));
+                        boolean babric = Boolean.parseBoolean((String) config.getValue("babric"));
 
-                        Instance.createInstance(folder.getName(), Versions.fileNameToVersion(instanceVersion));
+                        Instance.createInstance(folder.getName(), Versions.fileNameToVersion(instanceVersion), babric);
                         instances = Main.instances;
 
                         createCenterPanel();
@@ -667,12 +666,12 @@ public class MainPanel extends JPanel {
         repaint();
     }
 
-    private boolean addInstance(String name, Versions versions) {
-        File folder = new File(path + "/instances/" + name);
+    private boolean addInstance(String name, Versions versions, boolean babric) {
+        File folder = new File(path + "/instances/" + name.replaceAll(" ", "_"));
         if(!folder.exists() || folder.listFiles() == null) {
             folder.mkdirs();
 
-            Instance.createInstance(name, versions);
+            Instance.createInstance(name, versions, babric);
             instances = Main.instances;
 
             createCenterPanel();

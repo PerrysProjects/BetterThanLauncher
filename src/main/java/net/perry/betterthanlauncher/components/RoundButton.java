@@ -103,10 +103,11 @@ public class RoundButton extends JButton {
                 case EDIT -> Shapes.drawGear(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
                 case HOME -> Shapes.drawHouse(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
                 case ADD -> Shapes.drawPlus(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
+                case GLOBUS -> Shapes.drawGlobus(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
             }
         } else {
             imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
-            imageIcon = ImageTool.createRoundedIcon(imageIcon, width, height, radius / 2, borderBackground);
+            imageIcon = ImageTool.createRoundedIcon(imageIcon, width, height, radius, borderBackground);
             g2.drawImage(imageIcon.getImage(), 0, 0, null);
         }
     }

@@ -5,5 +5,6 @@ public enum Icons {
     EDIT,
     FOLDER,
     HOME,
-    ADD;
+    ADD,
+    GLOBUS;
 }

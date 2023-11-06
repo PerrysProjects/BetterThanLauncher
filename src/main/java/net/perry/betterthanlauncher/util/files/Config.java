@@ -79,7 +79,6 @@ public class Config {
                 }
 
             }
-
             reader.close();
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
