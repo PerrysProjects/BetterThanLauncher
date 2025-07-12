@@ -45,10 +45,10 @@ public class Config {
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while((line = br.readLine()) != null) {
-                String[] parts = line.split(":");
-                if(parts.length == 2) {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim();
+                int index = line.indexOf(':');
+                if(index != -1) {
+                    String key = line.substring(0, index).trim();
+                    String value = line.substring(index + 1).trim();
                     Object parsedValue;
                     try {
                         parsedValue = Integer.parseInt(value);

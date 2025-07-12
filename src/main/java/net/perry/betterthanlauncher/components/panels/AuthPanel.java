@@ -39,7 +39,7 @@ public class AuthPanel extends JPanel {
         Dimension textMaxSize = new Dimension(getWidth(), 25);
         Box.Filler textFiller = new Box.Filler(textMinSize, textPrefSize, textMaxSize);
 
-        RoundButton copyButton = new RoundButton("Copy Code", theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
+        RoundButton copyButton = new RoundButton("Copy Code", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         copyButton.setMaximumSize(new Dimension(80, 40));
         copyButton.setMinimumSize(new Dimension(80, 40));
         copyButton.setPreferredSize(new Dimension(80, 40));
@@ -55,7 +55,7 @@ public class AuthPanel extends JPanel {
         Dimension copyMaxSize = new Dimension(getWidth(), 25);
         Box.Filler copyFiller = new Box.Filler(copyMinSize, copyPrefSize, copyMaxSize);
 
-        RoundButton goButton = new RoundButton("Open Link", theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
+        RoundButton goButton = new RoundButton("Open Link", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         goButton.setMaximumSize(new Dimension(80, 40));
         goButton.setMinimumSize(new Dimension(80, 40));
         goButton.setPreferredSize(new Dimension(80, 40));

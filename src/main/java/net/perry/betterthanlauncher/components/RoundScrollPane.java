@@ -3,30 +3,25 @@ package net.perry.betterthanlauncher.components;
 import javax.swing.*;
 import java.awt.*;
 
-public class RoundPanel extends JPanel {
+public class RoundScrollPane extends JScrollPane {
     private final Color background;
-    private final Color shadow;
     private final boolean leftSided;
 
-    public RoundPanel(Color background) {
-        this(background, null, false);
+    public RoundScrollPane(Component view, Color background) {
+        this(view, background, false);
     }
 
-    public RoundPanel(Color background, Color shadow) {
-        this(background, shadow, false);
-    }
-
-    public RoundPanel(Color background, boolean leftSided) {
-        this(background, null, leftSided);
-    }
-
-    private RoundPanel(Color background, Color shadow, boolean leftSided) {
+    public RoundScrollPane(Component view, Color background, boolean leftSided) {
+        super(view);
         this.background = background;
-        this.shadow = shadow;
         this.leftSided = leftSided;
 
         setOpaque(false);
-        setBackground(null);
+        getViewport().setOpaque(false);
+        setBorder(BorderFactory.createEmptyBorder());
+
+        getVerticalScrollBar().setOpaque(false);
+        getHorizontalScrollBar().setOpaque(false);
     }
 
     @Override
@@ -37,14 +32,6 @@ public class RoundPanel extends JPanel {
         int radius = 10;
         int width = getWidth();
         int height = getHeight();
-
-        if(shadow != null) {
-            g2.setColor(shadow);
-            g2.fillRoundRect(0, 0, width, height, radius, radius);
-
-            width -= 3;
-            height -= 3;
-        }
 
         g2.setColor(background);
         g2.fillRoundRect(0, 0, width, height, radius, radius);
@@ -59,9 +46,5 @@ public class RoundPanel extends JPanel {
     @Override
     public Color getBackground() {
         return background;
-    }
-
-    public Color getShadow() {
-        return shadow;
     }
 }

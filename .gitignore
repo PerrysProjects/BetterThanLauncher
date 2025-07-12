@@ -33,3 +33,12 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Program Files ###
+profile.json
+*.log
+*.conf
+instances/
+versions/
+libraries/
+logs/

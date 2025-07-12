@@ -1,10 +1,7 @@
 package net.perry.betterthanlauncher.components.panels;
 
 import net.perry.betterthanlauncher.Main;
-import net.perry.betterthanlauncher.components.Icons;
-import net.perry.betterthanlauncher.components.RoundButton;
-import net.perry.betterthanlauncher.components.RoundCheckBox;
-import net.perry.betterthanlauncher.components.RoundPanel;
+import net.perry.betterthanlauncher.components.*;
 import net.perry.betterthanlauncher.components.uis.CustomComboBoxUI;
 import net.perry.betterthanlauncher.components.uis.CustomScrollBarUI;
 import net.perry.betterthanlauncher.instances.Instance;
@@ -36,22 +33,22 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MainPanel extends JPanel {
-    private String path;
-    private Config config;
+    private final String path;
+    private final Config config;
     private Themes theme;
     private Map<String, Instance> instances;
-    private Auth auth;
-    private StepMCProfile.MCProfile loadedProfile;
+    private final Auth auth;
+    private final StepMCProfile.MCProfile loadedProfile;
+
+    private JPanel sideBar;
+    private JPanel topBar;
 
     private JPanel centerPanel;
     private JPanel instancesPanel;
-    private JPanel sideBar;
-    private JPanel topBar;
-    private JPanel bottomBar;
-    private JScrollPane centerScrollPane;
-    private JPanel addPanel;
-    private JPanel accountPanel;
-    private JPanel instanceEditPanel;
+    private RoundScrollPane centerScrollPane;
+    private RoundPanel addPanel;
+    private RoundPanel accountPanel;
+    private RoundPanel instanceEditPanel;
 
     public MainPanel() {
         path = Main.path;
@@ -65,30 +62,29 @@ public class MainPanel extends JPanel {
             theme = Themes.valueOf(String.valueOf(config.getValue("theme")).toUpperCase());
         }
 
-        setBackground(theme.getBackground());
+        setBackground(theme.getComponents());
         setLayout(new BorderLayout());
 
-        Dimension leftMinSize = new Dimension(25, getHeight());
-        Dimension leftPrefSize = new Dimension(25, getHeight());
-        Dimension leftMaxSize = new Dimension(25, getHeight());
-        Box.Filler leftFiller = new Box.Filler(leftMinSize, leftPrefSize, leftMaxSize);
-
-        centerPanel = new JPanel();
-        centerPanel.setBackground(null);
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
-
-        instancesPanel = new JPanel();
-        instancesPanel.setBackground(null);
-        instancesPanel.setLayout(new BoxLayout(instancesPanel, BoxLayout.Y_AXIS));
+        createSideBar();
+        createTopBar();
 
         createCenterPanel();
+        createAddPanel();
+        createAccountPanel();
+        createInstanceEditPanel();
 
+        add(sideBar, BorderLayout.WEST);
+        add(topBar, BorderLayout.NORTH);
+        add(centerScrollPane, BorderLayout.CENTER);
+    }
+
+    private void createSideBar() {
         sideBar = new JPanel();
         sideBar.setBackground(null);
         sideBar.setPreferredSize(new Dimension(60, getHeight()));
         sideBar.setLayout(new BoxLayout(sideBar, BoxLayout.Y_AXIS));
 
-        RoundButton homeButton = new RoundButton(Icons.HOME, theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
+        RoundButton homeButton = new RoundButton(Icons.HOME, theme.getComponents4(), theme.getComponents5(), theme.getText2());
         homeButton.setMaximumSize(new Dimension(40, 40));
         homeButton.setMinimumSize(new Dimension(40, 40));
         homeButton.setPreferredSize(new Dimension(40, 40));
@@ -97,12 +93,7 @@ public class MainPanel extends JPanel {
         });
         homeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        Dimension addMinSize = new Dimension(sideBar.getWidth(), 15);
-        Dimension addPrefSize = new Dimension(sideBar.getWidth(), 15);
-        Dimension addMaxSize = new Dimension(sideBar.getWidth(), 15);
-        Box.Filler addFiller = new Box.Filler(addMinSize, addPrefSize, addMaxSize);
-
-        RoundButton addButton = new RoundButton(Icons.ADD, theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
+        RoundButton addButton = new RoundButton(Icons.ADD, theme.getComponents4(), theme.getComponents5(), theme.getText2());
         addButton.setMaximumSize(new Dimension(40, 40));
         addButton.setMinimumSize(new Dimension(40, 40));
         addButton.setPreferredSize(new Dimension(40, 40));
@@ -118,7 +109,8 @@ public class MainPanel extends JPanel {
         } catch(IOException e) {
             Logger.error(e);
         }
-        RoundButton profileButton = new RoundButton(skinHeadImage, theme.getBackground(), theme.getBackground(), theme.getBackground());
+
+        RoundButton profileButton = new RoundButton(skinHeadImage, theme.getBackground(), theme.getBackground());
         profileButton.setMaximumSize(new Dimension(40, 40));
         profileButton.setMinimumSize(new Dimension(40, 40));
         profileButton.setPreferredSize(new Dimension(40, 40));
@@ -127,27 +119,20 @@ public class MainPanel extends JPanel {
         });
         profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        Dimension bottomMinSize = new Dimension(sideBar.getWidth(), 15);
-        Dimension bottomPrefSize = new Dimension(sideBar.getWidth(), 15);
-        Dimension bottomMaxSize = new Dimension(sideBar.getWidth(), 15);
-        Box.Filler bottomFiller = new Box.Filler(bottomMinSize, bottomPrefSize, bottomMaxSize);
-
+        sideBar.add(filler(sideBar.getWidth(), 15));
         sideBar.add(homeButton);
-        sideBar.add(addFiller);
+        sideBar.add(filler(sideBar.getWidth(), 15));
         sideBar.add(addButton);
         sideBar.add(Box.createVerticalGlue());
         sideBar.add(profileButton);
-        sideBar.add(bottomFiller);
+        sideBar.add(filler(sideBar.getWidth(), 15));
+    }
 
+    private void createTopBar() {
         topBar = new JPanel();
         topBar.setBackground(null);
         topBar.setPreferredSize(new Dimension(getWidth(), 60));
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-
-        Dimension logoMinSize = new Dimension(25, topBar.getHeight());
-        Dimension logoPrefSize = new Dimension(25, topBar.getHeight());
-        Dimension logoMaxSize = new Dimension(25, topBar.getHeight());
-        Box.Filler logoFiller = new Box.Filler(logoMinSize, logoPrefSize, logoMaxSize);
 
         ImageIcon logoIcon = null;
         try {
@@ -158,47 +143,35 @@ public class MainPanel extends JPanel {
         }
 
         JLabel logoLabel = new JLabel(logoIcon, SwingConstants.LEFT);
-        logoLabel.setForeground(theme.getText());
-        logoLabel.setHorizontalTextPosition(JLabel.CENTER);
-        logoLabel.setVerticalTextPosition(JLabel.TOP);
+        logoLabel.setHorizontalAlignment(JLabel.CENTER);
+        logoLabel.setVerticalAlignment(JLabel.CENTER);
         logoLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        Dimension btaModdingMinSize = new Dimension(25, topBar.getHeight());
-        Dimension btaModdingPrefSize = new Dimension(25, topBar.getHeight());
-        Dimension btaModdingMaxSize = new Dimension(25, topBar.getHeight());
-        Box.Filler btaModdingFiller = new Box.Filler(btaModdingMinSize, btaModdingPrefSize, btaModdingMaxSize);
-
-        ImageIcon discordIcon = null;
-        try {
-            BufferedImage discordBI = ImageIO.read(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("icons/discord_icon.png")));
-            discordIcon = new ImageIcon(discordBI.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
-            discordIcon = ImageTool.addBackgroundColor(discordIcon, theme.getComponents4());
-        } catch(IOException e) {
-            Logger.error(e);
-        }
-
-        RoundButton btaModding = new RoundButton(Icons.GLOBUS, theme.getComponents4(), theme.getComponents5(), theme.getBackground(), theme.getText2());
-        btaModding.setMaximumSize(new Dimension(40, 40));
-        btaModding.setMinimumSize(new Dimension(40, 40));
-        btaModding.setPreferredSize(new Dimension(40, 40));
-        btaModding.addActionListener(e -> {
+        RoundButton modrinthButton = new RoundButton(Icons.GLOBUS, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+        modrinthButton.setMaximumSize(new Dimension(40, 40));
+        modrinthButton.setMinimumSize(new Dimension(40, 40));
+        modrinthButton.setPreferredSize(new Dimension(40, 40));
+        modrinthButton.addActionListener(e -> {
             Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
             if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
                 try {
-                    desktop.browse(URI.create("https://bta-modding.nouma-vallee.fr/mods/?query="));
+                    desktop.browse(URI.create("https://modrinth.com/mods?g=categories:bta-babric"));
                 } catch(Exception ex) {
                     Logger.error(ex);
                 }
             }
         });
-        btaModding.setAlignmentY(Component.CENTER_ALIGNMENT);
+        modrinthButton.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        Dimension babricDCMinSize = new Dimension(72, topBar.getHeight());
-        Dimension babricDCPrefSize = new Dimension(72, topBar.getHeight());
-        Dimension babricDCMaxSize = new Dimension(72, topBar.getHeight());
-        Box.Filler babricDCFiller = new Box.Filler(babricDCMinSize, babricDCPrefSize, babricDCMaxSize);
+        ImageIcon discordIcon = null;
+        try {
+            BufferedImage discordBI = ImageIO.read(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("icons/discord_icon.png")));
+            discordIcon = new ImageIcon(discordBI.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+        } catch(IOException e) {
+            Logger.error(e);
+        }
 
-        RoundButton babricDiscord = new RoundButton(discordIcon, theme.getComponents4(), theme.getComponents5(), theme.getBackground());
+        RoundButton babricDiscord = new RoundButton(discordIcon, theme.getComponents4(), theme.getComponents5());
         babricDiscord.setMaximumSize(new Dimension(40, 40));
         babricDiscord.setMinimumSize(new Dimension(40, 40));
         babricDiscord.setPreferredSize(new Dimension(40, 40));
@@ -214,30 +187,154 @@ public class MainPanel extends JPanel {
         });
         babricDiscord.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        topBar.add(logoFiller);
+        topBar.add(filler(10, topBar.getHeight()));
         topBar.add(logoLabel);
         topBar.add(Box.createHorizontalGlue());
-        topBar.add(btaModding);
-        topBar.add(btaModdingFiller);
-        //topBar.add(btaDiscord);
-        //topBar.add(btaDCFiller);
+        topBar.add(modrinthButton);
+        topBar.add(filler(25, topBar.getHeight()));
         topBar.add(babricDiscord);
-        topBar.add(babricDCFiller);
+        topBar.add(filler(30, topBar.getHeight()));
+    }
 
-        centerScrollPane = new JScrollPane(centerPanel);
+    private void createCenterPanel() {
+        centerPanel = new JPanel();
+        centerPanel.setOpaque(false);
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
+
+        instancesPanel = new JPanel();
+        instancesPanel.setOpaque(false);
+        instancesPanel.setLayout(new BoxLayout(instancesPanel, BoxLayout.Y_AXIS));
+
+        centerScrollPane = new RoundScrollPane(centerPanel, theme.getBackground(), true);
         centerScrollPane.setBackground(null);
         centerScrollPane.getViewport().setBackground(null);
         centerScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        ((JScrollBar) centerScrollPane.getComponent(1)).setUI(new CustomScrollBarUI(theme.getComponents2(), theme.getComponents3()));
-        centerScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        ((JScrollBar) centerScrollPane.getComponent(1)).setUI(new CustomScrollBarUI(theme.getBackground(), theme.getComponents3(), 4));
+        centerScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         centerScrollPane.setEnabled(true);
 
-        bottomBar = new JPanel();
-        bottomBar.setBackground(null);
-        bottomBar.setPreferredSize(new Dimension(getWidth(), 25));
-        bottomBar.setLayout(new BoxLayout(bottomBar, BoxLayout.X_AXIS));
+        updateCenterPanel();
+    }
 
-        addPanel = new JPanel();
+    private void updateCenterPanel() {
+        centerPanel.removeAll();
+        instancesPanel.removeAll();
+
+        Dimension topFillerSize = new Dimension(1, 20);
+        Box.Filler topFiller = new Box.Filler(topFillerSize, topFillerSize, topFillerSize);
+
+        instancesPanel.add(topFiller);
+
+        for(Instance instance : instances.values()) {
+            int height = 100;
+
+            JPanel emptyPanel = new JPanel();
+            emptyPanel.setLayout(new BorderLayout());
+
+            RoundPanel instancePanel = new RoundPanel(theme.getComponents(), theme.getShadow());
+            instancePanel.setLayout(new BoxLayout(instancePanel, BoxLayout.X_AXIS));
+
+            Dimension iconFillerSize = new Dimension(25, height);
+            Box.Filler iconFiller = new Box.Filler(iconFillerSize, iconFillerSize, iconFillerSize);
+
+            ImageIcon originalImageIcon = instance.getIcon();
+            ImageIcon scaledImageIcon = new ImageIcon(originalImageIcon.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
+            ImageIcon roundedImageIcon = ImageTool.createRoundedIcon(scaledImageIcon, 10, theme.getComponents2());
+            JLabel iconLabel = new JLabel(roundedImageIcon, SwingConstants.LEFT);
+            iconLabel.setForeground(theme.getText());
+            iconLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            Dimension nameFillerSize = new Dimension(25, height);
+            Box.Filler nameFiller = new Box.Filler(nameFillerSize, nameFillerSize, nameFillerSize);
+
+            JLabel nameLabel = new JLabel(instance.getDisplayName());
+            nameLabel.setForeground(theme.getText());
+            nameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            RoundButton folderButton = new RoundButton(Icons.FOLDER, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+            folderButton.setMaximumSize(new Dimension(40, 40));
+            folderButton.setMinimumSize(new Dimension(40, 40));
+            folderButton.setPreferredSize(new Dimension(40, 40));
+            folderButton.addActionListener(e -> {
+                try {
+                    if(Desktop.isDesktopSupported()) {
+                        Desktop desktop = Desktop.getDesktop();
+                        File directory = new File(instance.getInstancePath());
+
+                        if(directory.exists()) {
+                            desktop.open(directory);
+                        }
+                    } else {
+                        Logger.error(new Exception("Desktop is not supported on this platform"));
+                    }
+                } catch(IOException ex) {
+                    Logger.error(ex);
+                }
+            });
+            folderButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            Dimension folderFillerSize = new Dimension(25, height);
+            Box.Filler folderFiller = new Box.Filler(folderFillerSize, folderFillerSize, folderFillerSize);
+
+            RoundButton editButton = new RoundButton(Icons.EDIT, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+            editButton.setMaximumSize(new Dimension(40, 40));
+            editButton.setMinimumSize(new Dimension(40, 40));
+            editButton.setPreferredSize(new Dimension(40, 40));
+            editButton.addActionListener(e -> {
+                updateInstanceEditPanel(instance);
+                changePanel(instanceEditPanel);
+            });
+            editButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            Dimension editFillerSize = new Dimension(25, height);
+            Box.Filler editFiller = new Box.Filler(editFillerSize, editFillerSize, editFillerSize);
+
+            RoundButton playButton = new RoundButton(Icons.PLAY, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+            playButton.setMaximumSize(new Dimension(40, 40));
+            playButton.setMinimumSize(new Dimension(40, 40));
+            playButton.setPreferredSize(new Dimension(40, 40));
+            playButton.addActionListener(e -> instance.start());
+            playButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            Dimension playFillerSize = new Dimension(25, height);
+            Box.Filler playFiller = new Box.Filler(playFillerSize, playFillerSize, playFillerSize);
+
+            instancePanel.add(iconFiller);
+            instancePanel.add(iconLabel);
+            instancePanel.add(nameFiller);
+            instancePanel.add(nameLabel);
+            instancePanel.add(Box.createHorizontalGlue());
+            instancePanel.add(folderButton);
+            instancePanel.add(folderFiller);
+            instancePanel.add(editButton);
+            instancePanel.add(editFiller);
+            instancePanel.add(playButton);
+            instancePanel.add(playFiller);
+
+            Dimension rightEmptyFillerSize = new Dimension(25, height);
+            Box.Filler rightEmptyFiller = new Box.Filler(rightEmptyFillerSize, rightEmptyFillerSize, rightEmptyFillerSize);
+
+            emptyPanel.add(instancePanel, BorderLayout.WEST);
+            emptyPanel.add(rightEmptyFiller, BorderLayout.EAST);
+
+            instancesPanel.add(instancePanel);
+            instancesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
+
+            if(instances.values().toArray()[instances.size() - 1].equals(instance)) {
+                instancesPanel.add(Box.createVerticalGlue());
+            }
+        }
+
+        centerPanel.add(filler(20, centerPanel.getHeight()));
+        centerPanel.add(instancesPanel);
+        centerPanel.add(filler(10, centerPanel.getHeight()));
+
+        revalidate();
+        repaint();
+    }
+
+    private void createAddPanel() {
+        addPanel = new RoundPanel(theme.getBackground(), true);
         addPanel.setBackground(null);
         addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.X_AXIS));
 
@@ -284,10 +381,9 @@ public class MainPanel extends JPanel {
             }
         });
 
-        String[] versionList = new String[Versions.values().length];
-        for(int i = 0; i < Versions.values().length; i++) {
-            versionList[i] = Versions.values()[i].getFileName();
-        }
+        String[] versionList = Versions.getAll().stream()
+                .map(Versions.VersionInfo::getFileName)
+                .toArray(String[]::new);
         JComboBox<String> versionComboBox = new JComboBox<>(versionList);
         versionComboBox.setBounds(48, 158, 150, 30);
         versionComboBox.setMaximumSize(new Dimension(150, 30));
@@ -297,7 +393,7 @@ public class MainPanel extends JPanel {
         versionComboBox.setForeground(theme.getText());
         versionComboBox.setUI(new CustomComboBoxUI(theme.getComponents2(), theme.getComponents2(), theme.getText(), theme.getComponents2()));
 
-        RoundCheckBox babricCheckBox = new RoundCheckBox("Babric", theme.getText(), theme.getComponents2(), theme.getComponents(), theme.getText());
+        RoundCheckBox babricCheckBox = new RoundCheckBox("Babric", theme.getText(), theme.getComponents2(), theme.getText());
         babricCheckBox.setBounds(48, 213, 65, 20);
         babricCheckBox.setMaximumSize(new Dimension(65, 20));
         babricCheckBox.setMinimumSize(new Dimension(65, 20));
@@ -305,21 +401,26 @@ public class MainPanel extends JPanel {
         babricCheckBox.setBackground(null);
         babricCheckBox.setForeground(theme.getText());
 
-        RoundButton createInstanceButton = new RoundButton("Create", theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
+        RoundButton createInstanceButton = new RoundButton("Create", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         createInstanceButton.setBounds(93, 258, 60, 40);
         createInstanceButton.setMaximumSize(new Dimension(60, 40));
         createInstanceButton.setMinimumSize(new Dimension(60, 40));
         createInstanceButton.setPreferredSize(new Dimension(60, 40));
         createInstanceButton.addActionListener(e -> {
-            if(!nameField.getText().equals("Enter name") && addInstance(nameField.getText(), Versions.fileNameToVersion(Objects.requireNonNull(versionComboBox.getSelectedItem()).toString()), babricCheckBox.isSelected())) {
+            String name = nameField.getText();
+            String selectedVersion = (String) versionComboBox.getSelectedItem();
+            Versions.VersionInfo versionInfo = Versions.getByFileName(selectedVersion);
+
+            if (!"Enter name".equals(name) && versionInfo != null && addInstance(name, versionInfo, babricCheckBox.isSelected())) {
                 nameField.setText("Enter name");
                 versionComboBox.setSelectedIndex(0);
+                nameField.setForeground(Color.BLACK); // Optional: reset color
             } else {
                 nameField.setForeground(Color.decode("#ed4337"));
             }
         });
 
-        RoundButton importButton = new RoundButton("Import", theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
+        RoundButton importButton = new RoundButton("Import", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         importButton.setBounds(293, 160, 60, 40);
         importButton.setMaximumSize(new Dimension(60, 40));
         importButton.setMinimumSize(new Dimension(60, 40));
@@ -337,8 +438,10 @@ public class MainPanel extends JPanel {
         addPanel.add(Box.createHorizontalGlue());
         addPanel.add(createInstancePanel);
         addPanel.add(Box.createHorizontalGlue());
+    }
 
-        accountPanel = new JPanel();
+    private void createAccountPanel() {
+        accountPanel = new RoundPanel(theme.getBackground(), true);
         accountPanel.setBackground(null);
         accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.X_AXIS));
 
@@ -370,7 +473,7 @@ public class MainPanel extends JPanel {
         UUIDLabel.setForeground(theme.getText());
         UUIDLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        RoundButton changeButton = new RoundButton("Log Out", theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
+        RoundButton changeButton = new RoundButton("Log Out", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         changeButton.setMaximumSize(new Dimension(60, 40));
         changeButton.setMinimumSize(new Dimension(60, 40));
         changeButton.setPreferredSize(new Dimension(60, 40));
@@ -389,154 +492,14 @@ public class MainPanel extends JPanel {
         accountPanel.add(Box.createHorizontalGlue());
         accountPanel.add(accountInfoPanel);
         accountPanel.add(Box.createHorizontalGlue());
+    }
 
-        instanceEditPanel = new JPanel();
-        instanceEditPanel.setBackground(null);
+    private void createInstanceEditPanel() {
+        instanceEditPanel = new RoundPanel(theme.getBackground(), true);
         instanceEditPanel.setLayout(new BoxLayout(instanceEditPanel, BoxLayout.X_AXIS));
-
-        add(leftFiller, BorderLayout.WEST);
-        add(sideBar, BorderLayout.EAST);
-        add(topBar, BorderLayout.NORTH);
-        add(centerScrollPane, BorderLayout.CENTER);
-        add(bottomBar, BorderLayout.SOUTH);
     }
 
-    private void createCenterPanel() {
-        centerPanel.removeAll();
-        instancesPanel.removeAll();
-
-        for(Instance instance : instances.values()) {
-            int height = 100;
-
-            JPanel emptyPanel = new JPanel();
-            emptyPanel.setLayout(new BorderLayout());
-
-            RoundPanel instancePanel = new RoundPanel(theme.getComponents(), theme.getShadow());
-            instancePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, height));
-            instancePanel.setMinimumSize(new Dimension(1, height));
-            instancePanel.setLayout(new BoxLayout(instancePanel, BoxLayout.X_AXIS));
-
-            Dimension iconMinSize = new Dimension(25, height);
-            Dimension iconPrefSize = new Dimension(25, height);
-            Dimension iconMaxSize = new Dimension(25, height);
-            Box.Filler iconFiller = new Box.Filler(iconMinSize, iconPrefSize, iconMaxSize);
-
-            ImageIcon originalImageIcon = instance.getIcon();
-            ImageIcon scaledImageIcon = new ImageIcon(originalImageIcon.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
-            ImageIcon roundedImageIcon = ImageTool.createRoundedIcon(scaledImageIcon, 60, 60, 10, theme.getComponents2());
-            JLabel iconLabel = new JLabel(roundedImageIcon, SwingConstants.LEFT);
-            iconLabel.setForeground(theme.getText());
-            iconLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            Dimension nameMinSize = new Dimension(25, height);
-            Dimension namePrefSize = new Dimension(25, height);
-            Dimension nameMaxSize = new Dimension(25, height);
-            Box.Filler nameFiller = new Box.Filler(nameMinSize, namePrefSize, nameMaxSize);
-
-            JLabel nameLabel = new JLabel(instance.getDisplayName());
-            nameLabel.setForeground(theme.getText());
-            nameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            RoundButton folderButton = new RoundButton(Icons.FOLDER, theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
-            folderButton.setMaximumSize(new Dimension(40, 40));
-            folderButton.setMinimumSize(new Dimension(40, 40));
-            folderButton.setPreferredSize(new Dimension(40, 40));
-            folderButton.addActionListener(e -> {
-                try {
-                    if(Desktop.isDesktopSupported()) {
-                        Desktop desktop = Desktop.getDesktop();
-                        File directory = new File(instance.getInstancePath());
-
-                        if(directory.exists()) {
-                            desktop.open(directory);
-                        }
-                    } else {
-                        Logger.error(new Exception("Desktop is not supported on this platform"));
-                    }
-                } catch(IOException ex) {
-                    Logger.error(ex);
-                }
-            });
-            folderButton.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            Dimension folderMinSize = new Dimension(25, height);
-            Dimension folderPrefSize = new Dimension(25, height);
-            Dimension folderMaxSize = new Dimension(25, height);
-            Box.Filler folderFiller = new Box.Filler(folderMinSize, folderPrefSize, folderMaxSize);
-
-            RoundButton editButton = new RoundButton(Icons.EDIT, theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
-            editButton.setMaximumSize(new Dimension(40, 40));
-            editButton.setMinimumSize(new Dimension(40, 40));
-            editButton.setPreferredSize(new Dimension(40, 40));
-            editButton.addActionListener(e -> {
-                createInstanceEditPanel(instance);
-                changePanel(instanceEditPanel);
-            });
-            editButton.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            Dimension editMinSize = new Dimension(25, height);
-            Dimension editPrefSize = new Dimension(25, height);
-            Dimension editMaxSize = new Dimension(25, height);
-            Box.Filler editFiller = new Box.Filler(editMinSize, editPrefSize, editMaxSize);
-
-            RoundButton playButton = new RoundButton(Icons.PLAY, theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
-            playButton.setMaximumSize(new Dimension(40, 40));
-            playButton.setMinimumSize(new Dimension(40, 40));
-            playButton.setPreferredSize(new Dimension(40, 40));
-            playButton.addActionListener(e -> instance.start());
-            playButton.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            Dimension playMinSize = new Dimension(25, height);
-            Dimension playPrefSize = new Dimension(25, height);
-            Dimension playMaxSize = new Dimension(25, height);
-            Box.Filler playFiller = new Box.Filler(playMinSize, playPrefSize, playMaxSize);
-
-            instancePanel.add(iconFiller);
-            instancePanel.add(iconLabel);
-            instancePanel.add(nameFiller);
-            instancePanel.add(nameLabel);
-            instancePanel.add(Box.createHorizontalGlue());
-            instancePanel.add(folderButton);
-            instancePanel.add(folderFiller);
-            instancePanel.add(editButton);
-            instancePanel.add(editFiller);
-            instancePanel.add(playButton);
-            instancePanel.add(playFiller);
-
-            Dimension rightEmptyMinSize = new Dimension(25, height);
-            Dimension rightEmptyPrefSize = new Dimension(25, height);
-            Dimension rightEmptyMaxSize = new Dimension(25, height);
-            Box.Filler rightEmptyFiller = new Box.Filler(rightEmptyMinSize, rightEmptyPrefSize, rightEmptyMaxSize);
-
-            emptyPanel.add(instancePanel, BorderLayout.WEST);
-            emptyPanel.add(rightEmptyFiller, BorderLayout.EAST);
-
-            Dimension betweenMinSize = new Dimension(1, 10);
-            Dimension betweenPrefSize = new Dimension(1, 10);
-            Dimension betweenMaxSize = new Dimension(Integer.MAX_VALUE, 10);
-            Box.Filler betweenFiller = new Box.Filler(betweenMinSize, betweenPrefSize, betweenMaxSize);
-
-            instancesPanel.add(betweenFiller);
-            instancesPanel.add(instancePanel);
-
-            if(instances.values().toArray()[instances.size() - 1].equals(instance)) {
-                instancesPanel.add(Box.createVerticalGlue());
-            }
-        }
-
-        Dimension centerMinSize = new Dimension(10, centerPanel.getHeight());
-        Dimension centerPrefSize = new Dimension(10, centerPanel.getHeight());
-        Dimension centerMaxSize = new Dimension(10, centerPanel.getHeight());
-        Box.Filler centerFiller = new Box.Filler(centerMinSize, centerPrefSize, centerMaxSize);
-
-        centerPanel.add(instancesPanel);
-        centerPanel.add(centerFiller);
-
-        revalidate();
-        repaint();
-    }
-
-    private void createInstanceEditPanel(Instance instance) {
+    private void updateInstanceEditPanel(Instance instance) {
         instanceEditPanel.removeAll();
 
         RoundPanel settingsPanel = new RoundPanel(theme.getComponents(), theme.getShadow());
@@ -569,7 +532,7 @@ public class MainPanel extends JPanel {
             memoryLabel.setText("Memory: " + memory[0]);
         });
 
-        RoundButton saveButton = new RoundButton("Save", theme.getComponents4(), theme.getComponents5(), theme.getComponents(), theme.getText2());
+        RoundButton saveButton = new RoundButton("Save", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         saveButton.setBounds(170, 335, 60, 40);
         saveButton.setMaximumSize(new Dimension(60, 40));
         saveButton.setMinimumSize(new Dimension(60, 40));
@@ -632,14 +595,20 @@ public class MainPanel extends JPanel {
 
                         Config config = new Config(folder.getPath() + "/instance.conf");
                         String instanceVersion = String.valueOf(config.getValue("version"));
-                        boolean babric = Boolean.parseBoolean((String) config.getValue("babric"));
+                        boolean babric = Boolean.parseBoolean(String.valueOf(config.getValue("babric")));
 
-                        Instance.createInstance(folder.getName(), Versions.fileNameToVersion(instanceVersion), babric);
-                        instances = Main.instances;
+                        Versions.VersionInfo versionInfo = Versions.getByFileName(instanceVersion);
 
-                        createCenterPanel();
-                        changePanel(centerScrollPane);
-                    } catch(IOException e) {
+                        if (versionInfo != null) {
+                            Instance.createInstance(folder.getName(), versionInfo, babric);
+                            instances = Main.instances;
+
+                            updateCenterPanel();
+                            changePanel(centerScrollPane);
+                        } else {
+                            Logger.error("Unknown version: " + instanceVersion);
+                        }
+                    } catch (IOException e) {
                         Logger.error(e);
                     }
                 } else {
@@ -666,19 +635,31 @@ public class MainPanel extends JPanel {
         repaint();
     }
 
-    private boolean addInstance(String name, Versions versions, boolean babric) {
+    private boolean addInstance(String name, Versions.VersionInfo versionInfo, boolean babric) {
         File folder = new File(path + "/instances/" + name.replaceAll(" ", "_"));
         if(!folder.exists() || folder.listFiles() == null) {
             folder.mkdirs();
 
-            Instance.createInstance(name, versions, babric);
+            Instance.createInstance(name, versionInfo, babric);
             instances = Main.instances;
 
-            createCenterPanel();
+            updateCenterPanel();
             changePanel(centerScrollPane);
         } else {
             return false;
         }
         return true;
+    }
+
+    private Box.Filler filler(int width, int height) {
+        Dimension fillerDimension = new Dimension(width, height);
+
+        Box.Filler filler = new Box.Filler(fillerDimension, fillerDimension, fillerDimension);
+        filler.setMinimumSize(fillerDimension);
+        filler.setMaximumSize(fillerDimension);
+        filler.setPreferredSize(fillerDimension);
+        filler.setOpaque(false);
+
+        return filler;
     }
 }

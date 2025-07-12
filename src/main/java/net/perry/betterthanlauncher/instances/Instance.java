@@ -4,6 +4,7 @@ import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.util.Logger;
 import net.perry.betterthanlauncher.util.files.Config;
 import net.perry.betterthanlauncher.util.tool.JarTool;
+import net.perry.betterthanlauncher.util.tool.NativesTool;
 import net.perry.betterthanlauncher.util.tool.ResTool;
 
 import javax.swing.*;
@@ -20,10 +21,12 @@ public class Instance {
     private String name;
     private String instancePath;
     private Config config;
-    private Versions version;
+    private Versions.VersionInfo versionInfo;
     private ImageIcon icon;
+
     private int memory;
     private boolean babric;
+    private String java_path;
 
     public Instance(String name) {
         path = Main.path;
@@ -34,15 +37,16 @@ public class Instance {
 
         config = new Config(instancePath + "/instance.conf");
 
-        version = Versions.fileNameToVersion((String) config.getValue("version"));
+        versionInfo = Versions.getByFileName(String.valueOf(config.getValue("version")));
+
         if(!new File(instancePath + "/icon.png").exists()) {
             ResTool.copy("icons/icon.png", instancePath);
         }
         icon = new ImageIcon(instancePath + "/icon.png");
 
         memory = (int) config.getValue("memory");
-
         babric = Boolean.parseBoolean((String) config.getValue("babric"));
+        java_path = String.valueOf(config.getValue("java_path"));
     }
 
     public void start() {
@@ -55,73 +59,115 @@ public class Instance {
                 instancePath = instancePath.replace(" ", "\\ ");
             }
 
-            String javaExecutable = "java";
-            String memoryOptions = "-Xms" + memory + "m -Xmx" + memory + "m";
-            String classpath = instancePath + "/minecraft.jar;" +
-                    path + "/libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar;" +
-                    path + "/libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar;" +
-                    path + "/libraries/babric/org/lwjgl/lwjgl/lwjgl/2.9.4-babric.1/lwjgl-2.9.4-babric.1.jar;" +
-                    path + "/libraries/babric/org/lwjgl/lwjgl/lwjgl_util/2.9.4-babric.1/lwjgl_util-2.9.4-babric.1.jar;";
-            if(Main.os.contains("win")) {
-                classpath += path + "/libraries/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-windows.jar;" +
-                        path + "/libraries/maven2/org/lwjgl/lwjgl-platform/3.0.0/lwjgl-platform-3.0.0-natives-windows.jar;";
-            } else if(Main.os.contains("nix") || Main.os.contains("nux") || Main.os.contains("unix")) {
-                classpath += path + "/libraries/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-linux.jar;" +
-                        path + "/libraries/maven2/org/lwjgl/lwjgl-platform/3.0.0/lwjgl-platform-3.0.0-natives-linux.jar;";
-            } else if(Main.os.contains("mac")) {
-                classpath += path + "/libraries/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-osx.jar;" +
-                        path + "/libraries/maven2/org/lwjgl/lwjgl-platform/3.0.0/lwjgl-platform-3.0.0-natives-osx.jar;";
-            }
-            if(babric) {
-                classpath += path + "/libraries/babric/babric/fabric-loader/0.14.24-babric.1/fabric-loader-0.14.24-babric.1.jar;" +
-                        path + "/libraries/babric/babric/log4j-config/1.0.0/log4j-config-1.0.0.jar;" +
-                        path + "/libraries/maven2/net/minecrell/terminalconsoleappender/1.2.0/terminalconsoleappender-1.2.0.jar;" +
-                        path + "/libraries/maven2/org/slf4j/slf4j-api/1.8.0-beta4/slf4j-api-1.8.0-beta4.jar;" +
-                        path + "/libraries/maven2/org/apache/logging/log4j/log4j-slf4j18-impl/2.16.0/log4j-slf4j18-impl-2.16.0.jar;" +
-                        path + "/libraries/maven2/org/apache/logging/log4j/log4j-api/2.16.0/log4j-api-2.16.0.jar;" +
-                        path + "/libraries/maven2/org/apache/logging/log4j/log4j-core/2.16.0/log4j-core-2.16.0.jar;" +
-                        path + "/libraries/maven2/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar;" +
-                        path + "/libraries/maven2/com/google/guava/guava/31.0.1-jre/guava-31.0.1-jre.jar;" +
-                        path + "/libraries/maven2/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar;" +
-                        path + "/libraries/maven2/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar;" +
-                        path + "/libraries/maven2/commons-codec/commons-codec/1.15/commons-codec-1.15.jar;" +
-                        path + "/libraries/net/fabricmc/tiny-mappings-parser/0.3.0%2Bbuild.17/tiny-mappings-parser-0.3.0%2Bbuild.17.jar;"+
-                        path + "/libraries/net/fabricmc/sponge-mixin/0.11.4%2Bmixin.0.8.5/sponge-mixin-0.11.4%2Bmixin.0.8.5.jar;" +
-                        path + "/libraries/net/fabricmc/tiny-remapper/0.8.2/tiny-remapper-0.8.2.jar;" +
-                        path + "/libraries/net/fabricmc/access-widener/2.1.0/access-widener-2.1.0.jar;" +
-                        path + "/libraries/org/ow2/asm/asm/9.3/asm-9.3.jar;" +
-                        path + "/libraries/org/ow2/asm/asm-analysis/9.3/asm-analysis-9.3.jar;" +
-                        path + "/libraries/org/ow2/asm/asm-commons/9.3/asm-commons-9.3.jar;" +
-                        path + "/libraries/org/ow2/asm/asm-tree/9.3/asm-tree-9.3.jar;" +
-                        path + "/libraries/org/ow2/asm/asm-util/9.3/asm-util-9.3.jar;";
-                if(Main.os.contains("nix") || Main.os.contains("nux") || Main.os.contains("unix") || Main.os.contains("mac")) {
-                    classpath = classpath.replaceAll(";", ":");
+            try {
+                if(versionInfo.getFileName().startsWith("bta_7.2") || versionInfo.getFileName().startsWith("bta_7.1") ||
+                        versionInfo.getFileName().startsWith("bta_1") || versionInfo.getFileName().startsWith("b_1.7.3")) {
+                    NativesTool.extractNatives(new File(path + "/libraries/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-windows.jar"), new File(instancePath + "/natives/"));
+                    NativesTool.extractNatives(new File(path + "/libraries/babric/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-babric.1/lwjgl-platform-2.9.4-babric.1-natives-windows.jar"), new File(instancePath + "/natives/"));
                 }
+            } catch(IOException e) {
+                Logger.error(e);
             }
-            String flags = "-Djava.library.path=" + path + "/libraries/natives";
-            if(babric) {
-                flags += " -Dfabric.gameVersion=1.7.7.0";
+
+            System.out.println(memory);
+
+            String javaExecutable = java_path.equalsIgnoreCase("%JAVA_HOME%") ? "java" : java_path;
+
+            String memoryOptions = "-Xms" + memory + "m -Xmx" + memory + "m";
+
+            String flags = "-Djava.awt.headless=false";
+
+            String classpath = "";
+
+            if(versionInfo.getFileName().startsWith("bta_7.2") || versionInfo.getFileName().startsWith("bta_7.1") ||
+                    versionInfo.getFileName().startsWith("bta_1") || versionInfo.getFileName().startsWith("b_1.7.3")) {
+                flags += " -Djava.library.path=\"" + instancePath + "/natives/\"";
+
+                classpath = path + "/libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar;" +
+                        path + "/libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar;" +
+                        path + "/libraries/babric/org/lwjgl/lwjgl/lwjgl/2.9.4-babric.1/lwjgl-2.9.4-babric.1.jar;" +
+                        path + "/libraries/babric/org/lwjgl/lwjgl/lwjgl_util/2.9.4-babric.1/lwjgl_util-2.9.4-babric.1.jar;";
+            } else {
+                classpath += path + "/libraries/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-windows-arm64.jar;" +
+
+                        path + "/libraries/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-windows-arm64.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-windows-x86.jar;" +
+
+                        path + "/libraries/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-windows-arm64.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-windows-x86.jar;" +
+
+                        path + "/libraries/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-windows-arm64.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-windows-x86.jar;" +
+
+                        path + "/libraries/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows-arm64.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows-x86.jar;" +
+
+                        path + "/libraries/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-windows-arm64.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-windows-x86.jar;" +
+
+                        path + "/libraries/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-windows.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-windows-arm64.jar;" +
+                        path + "/libraries/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-windows-x86.jar;" +
+
+                        path + "/libraries/org/apache/logging/log4j/log4j-api/2.19.0/log4j-api-2.19.0.jar;" +
+                        path + "/libraries/org/apache/logging/log4j/log4j-core/2.19.0/log4j-core-2.19.0.jar;" +
+                        path + "/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.19.0/log4j-slf4j2-impl-2.19.0.jar;" +
+                        path + "/libraries/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar;";
             }
+
+            classpath += instancePath + "/minecraft.jar";
+
             String mainClass = "net.minecraft.client.Minecraft";
-            if(babric) {
-                mainClass = "net.fabricmc.loader.impl.launch.knot.KnotClient";
-            }
+
             String username = Main.auth.getLoadedProfile().name();
             String sessionID = Main.auth.getLoadedProfile().prevResult().prevResult().access_token();
-            String gameArguments = "--gameDir " + instancePath + " --assetsDir " + instancePath + " --version " + version.getFileName();
-            String command = javaExecutable + " " + memoryOptions + " -cp " + classpath + " " + flags + " " + mainClass + " " + username + " " + sessionID + " " + gameArguments;
+            String gameArguments = "--username " + username + " --session " + sessionID + " --gameDir \"" + instancePath + "\" --assetsDir \"" + instancePath + "\" --title " + versionInfo.getFileName();
 
-            System.out.println("Instance " + name + " started:");
-            System.out.println(command.replace(sessionID, "SESSION_ID"));
+            String command = javaExecutable + " " + memoryOptions + " " + flags + " -cp \"" + classpath + "\" " + mainClass + " " + gameArguments;
+
+            Logger.log("Instance " + name + " started:");
+            Logger.log(command.replaceAll(sessionID, "SESSION_ID"));
 
             try {
                 Process process = Runtime.getRuntime().exec(command);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-                while((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+                new Thread(() -> {
+                    String line;
+                    try {
+                        while((line = reader.readLine()) != null) {
+                            System.out.println(line);
+                        }
+                    } catch(IOException e) {
+                        Logger.error(e);
+                    }
+                }).start();
+
+                new Thread(() -> {
+                    String line;
+                    try {
+                        while((line = errorReader.readLine()) != null) {
+                            System.err.println(line);
+                        }
+                    } catch(IOException e) {
+                        Logger.error(e);
+                    }
+                }).start();
 
                 int exitCode = process.waitFor();
                 System.out.println("Minecraft exited with Exit Code: " + exitCode);
@@ -133,7 +179,7 @@ public class Instance {
         minecraftThread.start();
     }
 
-    public static void createInstance(String name, Versions version, boolean babric) {
+    public static void createInstance(String name, Versions.VersionInfo versionInfo, boolean babric) {
         String path = Main.path;
         File instanceFolder = new File(path + "/instances/" + name.replaceAll(" ", "_"));
 
@@ -143,15 +189,18 @@ public class Instance {
 
         JarTool jarMerger = new JarTool();
         if(!new File(instanceFolder.getPath() + "/minecraft.jar").exists()) {
-            jarMerger.merge(path + "/versions/" + version.toString().toLowerCase() + "/" + version.getFileName() + ".jar",
-                    path + "/versions/" + Versions.B_1_7_3.toString().toLowerCase() + "/" + Versions.B_1_7_3.getFileName() + ".jar",
+            jarMerger.merge(path + "/versions/" + versionInfo.getFileName() + "/client.jar",
+                    path + "/versions/b_1.7.3/client.jar",
                     instanceFolder.getPath() + "/minecraft.jar");
         }
 
         Config config = new Config(instanceFolder.getPath(), "instance", "conf");
-        config.writeConfig("version", version.getFileName());
+        config.writeConfig("version", versionInfo.getFileName());
         config.writeConfig("memory", "1024");
         config.writeConfig("babric", String.valueOf(babric));
+        config.writeConfig("java_path", (versionInfo.getFileName().startsWith("bta_7.2") || versionInfo.getFileName().startsWith("bta_7.1") ||
+                versionInfo.getFileName().startsWith("bta_1") || versionInfo.getFileName().startsWith("b_1.7.3")) ?
+                "C:/Program Files/Java/jdk-8.0.452.9/bin/java.exe" : "%JAVA_HOME%");
 
         ResTool.copy("icons/icon.png", instanceFolder.getPath());
 
@@ -185,8 +234,8 @@ public class Instance {
         return name.replaceAll("_", " ");
     }
 
-    public Versions getVersion() {
-        return version;
+    public Versions.VersionInfo getVersionInfo() {
+        return versionInfo;
     }
 
     public ImageIcon getIcon() {

@@ -13,46 +13,38 @@ public class RoundButton extends JButton {
     private ImageIcon imageIcon;
     private Color background;
     private Color hoverBackground;
-    private Color borderBackground;
     private Color foreground;
 
     private boolean hoverButton;
 
-    public RoundButton(String text, Color background, Color hoverBackground, Color borderBackground, Color foreground) {
+    public RoundButton(String text, Color background, Color hoverBackground, Color foreground) {
+        this(background, hoverBackground, foreground);
         this.text = text;
-        this.background = background;
-        this.hoverBackground = hoverBackground;
-        this.borderBackground = borderBackground;
-        this.foreground = foreground;
-
-        setUp();
     }
 
-    public RoundButton(Icons icon, Color background, Color hoverBackground, Color borderBackground, Color foreground) {
+    public RoundButton(Icons icon, Color background, Color hoverBackground, Color foreground) {
+        this(background, hoverBackground, foreground);
         this.icon = icon;
+    }
+
+    public RoundButton(ImageIcon imageIcon, Color background, Color hoverBackground) {
+        this(background, hoverBackground, null);
+        this.imageIcon = imageIcon;
+    }
+
+    private RoundButton(Color background, Color hoverBackground, Color foreground) {
         this.background = background;
         this.hoverBackground = hoverBackground;
-        this.borderBackground = borderBackground;
         this.foreground = foreground;
 
-        setUp();
-    }
-
-    public RoundButton(ImageIcon imageIcon, Color background, Color hoverBackground, Color borderBackground) {
-        this.imageIcon = imageIcon;
-        this.background = background;
-        this.hoverBackground = hoverBackground;
-        this.borderBackground = borderBackground;
-
-        setUp();
-    }
-
-    private void setUp() {
         hoverButton = false;
 
         setBackground(null);
         setForeground(null);
         setBorder(BorderFactory.createEmptyBorder());
+
+        setOpaque(false);
+        setContentAreaFilled(false);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -71,16 +63,13 @@ public class RoundButton extends JButton {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        //super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int radius = getHeight() / 2;
         int width = getWidth();
         int height = getHeight();
-
-        g2.setColor(borderBackground);
-        g2.fillRect(0, 0, width, height);
 
         if(hoverButton) {
             g2.setColor(hoverBackground);
@@ -106,8 +95,12 @@ public class RoundButton extends JButton {
                 case GLOBUS -> Shapes.drawGlobus(g2, width / 2 - iconWidth / 2, iconHeight / 2, iconWidth, iconHeight);
             }
         } else {
-            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
-            imageIcon = ImageTool.createRoundedIcon(imageIcon, width, height, radius, borderBackground);
+            ImageIcon imageIcon = new ImageIcon(this.imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+            if(hoverButton) {
+                imageIcon = ImageTool.createRoundedIcon(imageIcon, radius, hoverBackground);
+            } else {
+                imageIcon = ImageTool.createRoundedIcon(imageIcon, radius, background);
+            }
             g2.drawImage(imageIcon.getImage(), 0, 0, null);
         }
     }

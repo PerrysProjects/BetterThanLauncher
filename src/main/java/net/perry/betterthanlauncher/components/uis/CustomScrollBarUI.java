@@ -3,22 +3,31 @@ package net.perry.betterthanlauncher.components.uis;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
+import java.io.Serial;
 
 public class CustomScrollBarUI extends BasicScrollBarUI {
-    private Color track;
-    private Color thumb;
+    private final Color track;
+    private final Color thumb;
 
     private final Dimension d = new Dimension();
 
+    private final int trackBorder;
+
     public CustomScrollBarUI(Color track, Color thumb) {
+        this(track, thumb, 0);
+    }
+
+    public CustomScrollBarUI(Color track, Color thumb, int trackBorder) {
         this.track = track;
         this.thumb = thumb;
+        this.trackBorder = trackBorder;
     }
 
     @Override
     protected JButton createDecreaseButton(int orientation) {
         return new JButton() {
 
+            @Serial
             private static final long serialVersionUID = -3592643796245558676L;
 
             @Override
@@ -32,6 +41,7 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     protected JButton createIncreaseButton(int orientation) {
         return new JButton() {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -61,10 +71,22 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2.setPaint(thumb);
-        g2.fillRoundRect(r.x, r.y, r.width, r.height, 10, 10);
 
+        int arc = Math.min(r.width, r.height) - 2 * trackBorder;
+
+        int x = r.x + trackBorder;
+        int y = r.y + trackBorder;
+        int width = r.width - 2 * trackBorder;
+        int height = r.height - 2 * trackBorder;
+
+        if (width % 2 != 0) width--;
+        if (height % 2 != 0) height--;
+
+        if (arc % 2 != 0) arc--;
+
+        g2.fillRoundRect(x, y, width, height, arc, arc);
         g2.setPaint(thumb);
-        g2.drawRoundRect(r.x, r.y, r.width, r.height, 10, 10);
+        g2.drawRoundRect(x, y, width, height, arc, arc);
 
         g2.dispose();
     }

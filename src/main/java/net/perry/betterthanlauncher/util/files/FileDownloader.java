@@ -23,8 +23,11 @@ public class FileDownloader {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
         String filePath = savePath + fileName;
 
+        Logger.log("Starting download from: " + fileUrl + " to: " + filePath);
+
         Path destinationPath = Paths.get(filePath);
         if(Files.exists(destinationPath)) {
+            Logger.log("File already exists: " + filePath + ", skipping download.");
             return;
         }
 
@@ -41,10 +44,12 @@ public class FileDownloader {
             while((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
+            Logger.log("Download completed: " + filePath);
         } catch(IOException e) {
             Logger.error(e);
         } finally {
             try {
+                assert inputStream != null;
                 inputStream.close();
             } catch(IOException e) {
                 Logger.error(e);

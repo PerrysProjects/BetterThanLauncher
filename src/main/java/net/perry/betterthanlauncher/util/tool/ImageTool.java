@@ -6,7 +6,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
 public class ImageTool {
-    public static ImageIcon createRoundedIcon(ImageIcon imageIcon, int width, int height, int radius, Color fillColor) {
+    public static ImageIcon createRoundedIcon(ImageIcon imageIcon, int radius, Color fillColor) {
         int w = imageIcon.getImage().getWidth(null);
         int h = imageIcon.getImage().getHeight(null);
         BufferedImage output = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);

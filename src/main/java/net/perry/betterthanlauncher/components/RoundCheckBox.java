@@ -7,39 +7,28 @@ public class RoundCheckBox extends JCheckBox {
     private String text;
     private Color checkmarkColor;
     private Color background;
-    private Color borderBackground;
     private Color foreground;
-
-    private boolean hoverCheckBox;
 
     private final int border = 4;
 
-    public RoundCheckBox(Color checkmarkColor, Color background, Color borderBackground, Color foreground) {
-        this.checkmarkColor = checkmarkColor;
-        this.background = background;
-        this.borderBackground = borderBackground;
-        this.foreground = foreground;
-
-        setCursor(new Cursor(Cursor.HAND_CURSOR));
-        setOpaque(false);
-        setBackground(borderBackground);
+    public RoundCheckBox(Color checkmarkColor, Color background, Color foreground) {
+        this(null, checkmarkColor, background, foreground);
     }
 
-    public RoundCheckBox(String text, Color checkmarkColor, Color background, Color borderBackground, Color foreground) {
+    public RoundCheckBox(String text, Color checkmarkColor, Color background, Color foreground) {
         this.text = text;
         this.checkmarkColor = checkmarkColor;
         this.background = background;
-        this.borderBackground = borderBackground;
         this.foreground = foreground;
 
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+
         setOpaque(false);
-        setBackground(borderBackground);
+        setContentAreaFilled(false);
     }
 
     @Override
     public void paint(Graphics grphcs) {
-        super.paint(grphcs);
         Graphics2D g2 = (Graphics2D) grphcs;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int ly = (getHeight() - 16) / 2;
