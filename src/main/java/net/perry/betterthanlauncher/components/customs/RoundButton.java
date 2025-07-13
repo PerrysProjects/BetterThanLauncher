@@ -1,5 +1,7 @@
-package net.perry.betterthanlauncher.components;
+package net.perry.betterthanlauncher.components.customs;
 
+import net.perry.betterthanlauncher.components.Icon;
+import net.perry.betterthanlauncher.components.Shapes;
 import net.perry.betterthanlauncher.util.tool.ImageTool;
 
 import javax.swing.*;
@@ -9,7 +11,7 @@ import java.awt.event.MouseEvent;
 
 public class RoundButton extends JButton {
     private String text;
-    private Icons icon;
+    private net.perry.betterthanlauncher.components.Icon icon;
     private ImageIcon imageIcon;
     private Color background;
     private Color hoverBackground;
@@ -22,7 +24,7 @@ public class RoundButton extends JButton {
         this.text = text;
     }
 
-    public RoundButton(Icons icon, Color background, Color hoverBackground, Color foreground) {
+    public RoundButton(Icon icon, Color background, Color hoverBackground, Color foreground) {
         this(background, hoverBackground, foreground);
         this.icon = icon;
     }

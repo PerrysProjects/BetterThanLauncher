@@ -1,5 +1,10 @@
 package net.perry.betterthanlauncher.instances;
 
+import net.perry.betterthanlauncher.Main;
+import net.perry.betterthanlauncher.util.Logger;
+import net.perry.betterthanlauncher.util.files.FileDownloader;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -79,6 +84,30 @@ public class Versions {
 
     public static Collection<VersionInfo> getAll() {
         return versionsMap.values();
+    }
+
+    public static void download() {
+        createFolder("versions");
+
+        for(Versions.VersionInfo version : Versions.getAll()) {
+            String folderName = version.getFileName().toLowerCase();
+            String versionDir = "versions/" + folderName;
+
+            createFolder(versionDir);
+
+            File jarFile = new File(Main.path + "/" + versionDir + "/client.jar");
+
+            if(!jarFile.exists()) {
+                FileDownloader.download(version.getLink(), versionDir + "/");
+            }
+        }
+    }
+
+    private static void createFolder(String name) {
+        File folder = new File(Main.path + "/" + name);
+        if(!folder.exists() && !folder.mkdirs()) {
+            Logger.log("Failed to create " + name + " folder.");
+        }
     }
 
     public static class VersionInfo {

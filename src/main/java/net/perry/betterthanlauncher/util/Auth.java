@@ -3,20 +3,23 @@ package net.perry.betterthanlauncher.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.lenni0451.commons.httpclient.HttpClient;
 import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.components.frames.AuthFrame;
-import net.raphimc.mcauth.MinecraftAuth;
-import net.raphimc.mcauth.step.java.StepMCProfile;
-import net.raphimc.mcauth.step.msa.StepMsaDeviceCode;
-import net.raphimc.mcauth.util.MicrosoftConstants;
-import org.apache.http.impl.client.CloseableHttpClient;
+import net.raphimc.minecraftauth.MinecraftAuth;
+import net.raphimc.minecraftauth.step.java.StepMCProfile;
+import net.raphimc.minecraftauth.step.java.session.StepFullJavaSession;
+import net.raphimc.minecraftauth.step.msa.StepMsaDeviceCode;
 
+import javax.naming.AuthenticationException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 public class Auth {
-    private StepMCProfile.MCProfile loadedProfile;
+    private StepFullJavaSession.FullJavaSession loadedProfile;
     private File file;
 
     private AuthFrame authFrame;
@@ -34,30 +37,47 @@ public class Auth {
     }
 
     public void codeLogIn() {
-        StepMCProfile.MCProfile mcProfile = null;
-        try(final CloseableHttpClient httpClient = MicrosoftConstants.createHttpClient()) {
-            mcProfile = MinecraftAuth.JAVA_DEVICE_CODE_LOGIN.getFromInput(httpClient, new StepMsaDeviceCode.MsaDeviceCodeCallback(msaDeviceCode -> {
-                authFrame = new AuthFrame(msaDeviceCode);
-            }));
-        } catch(Exception e) {
-            System.exit(80);
-            Logger.error(e);
+        StepFullJavaSession.FullJavaSession profile = null;
+        HttpClient httpClient = MinecraftAuth.createHttpClient();
+
+        try {
+            profile = MinecraftAuth.JAVA_DEVICE_CODE_LOGIN.getFromInput(
+                    httpClient,
+                    new StepMsaDeviceCode.MsaDeviceCodeCallback(msaDeviceCode -> {
+                        authFrame = new AuthFrame(msaDeviceCode);
+                    })
+            );
+        } catch(TimeoutException e) {
+            Logger.error("Timeout during device code login", e);
+            System.exit(ExitCode.TIMEOUT_LOGIN.code);
+        } catch(AuthenticationException e) {
+            Logger.error("Authentication failed", e);
+            System.exit(ExitCode.AUTH_FAILED.code);
+        } catch (Exception e) {
+            Logger.error("Unexpected login error", e);
+            System.exit(ExitCode.GENERAL_ERROR.code);
         }
 
-        final JsonObject serializedProfile = mcProfile.toJson();
+        if (profile == null) {
+            Logger.error("Login returned null profile");
+            System.exit(ExitCode.AUTH_FAILED.code);
+        }
 
+        final JsonObject serializedProfile = MinecraftAuth.JAVA_DEVICE_CODE_LOGIN.toJson(profile);
         String jsonString = new Gson().toJson(serializedProfile);
-        try(FileWriter writer = new FileWriter(file)) {
+
+        try (FileWriter writer = new FileWriter(file)) {
             writer.write(jsonString);
             loadedProfile = MinecraftAuth.JAVA_DEVICE_CODE_LOGIN.fromJson(serializedProfile);
-        } catch(Exception e) {
-            Logger.error(e);
+        } catch(IOException e) {
+            Logger.error("Failed to write session to file", e);
+            System.exit(ExitCode.FILE_WRITE_FAILED.code);
+        } finally {
+            if (authFrame != null) authFrame.dispose();
         }
-
-        authFrame.dispose();
     }
 
-    public StepMCProfile.MCProfile getLoadedProfile() {
+    public StepFullJavaSession.FullJavaSession getLoadedProfile() {
         return loadedProfile;
     }
 

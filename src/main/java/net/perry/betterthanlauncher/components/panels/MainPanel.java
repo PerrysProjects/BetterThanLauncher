@@ -1,18 +1,24 @@
 package net.perry.betterthanlauncher.components.panels;
 
 import net.perry.betterthanlauncher.Main;
-import net.perry.betterthanlauncher.components.*;
-import net.perry.betterthanlauncher.components.uis.CustomComboBoxUI;
-import net.perry.betterthanlauncher.components.uis.CustomScrollBarUI;
+import net.perry.betterthanlauncher.components.Icon;
+import net.perry.betterthanlauncher.components.customs.RoundButton;
+import net.perry.betterthanlauncher.components.customs.RoundCheckBox;
+import net.perry.betterthanlauncher.components.customs.RoundPanel;
+import net.perry.betterthanlauncher.components.customs.RoundScrollPane;
+import net.perry.betterthanlauncher.components.customs.uis.CustomComboBoxUI;
+import net.perry.betterthanlauncher.components.customs.uis.CustomScrollBarUI;
 import net.perry.betterthanlauncher.instances.Instance;
-import net.perry.betterthanlauncher.instances.Themes;
+import net.perry.betterthanlauncher.components.Theme;
 import net.perry.betterthanlauncher.instances.Versions;
 import net.perry.betterthanlauncher.util.Auth;
 import net.perry.betterthanlauncher.util.Logger;
 import net.perry.betterthanlauncher.util.files.Config;
+import net.perry.betterthanlauncher.util.tool.BrowserTool;
 import net.perry.betterthanlauncher.util.tool.ImageTool;
+import net.perry.betterthanlauncher.util.tool.PanelTool;
 import net.perry.betterthanlauncher.util.tool.ZipTool;
-import net.raphimc.mcauth.step.java.StepMCProfile;
+import net.raphimc.minecraftauth.step.java.session.StepFullJavaSession;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,6 +27,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +43,10 @@ import java.util.Objects;
 public class MainPanel extends JPanel {
     private final String path;
     private final Config config;
-    private Themes theme;
+    private Theme theme;
     private Map<String, Instance> instances;
     private final Auth auth;
-    private final StepMCProfile.MCProfile loadedProfile;
+    private final StepFullJavaSession.FullJavaSession loadedProfile;
 
     private JPanel sideBar;
     private JPanel topBar;
@@ -53,13 +61,13 @@ public class MainPanel extends JPanel {
     public MainPanel() {
         path = Main.path;
         config = Main.config;
-        theme = Themes.DARK;
+        theme = Theme.DARK;
         instances = Main.instances;
         auth = Main.auth;
         loadedProfile = auth.getLoadedProfile();
 
         if(config.getValue("theme") != null) {
-            theme = Themes.valueOf(String.valueOf(config.getValue("theme")).toUpperCase());
+            theme = Theme.valueOf(String.valueOf(config.getValue("theme")).toUpperCase());
         }
 
         setBackground(theme.getComponents());
@@ -84,48 +92,44 @@ public class MainPanel extends JPanel {
         sideBar.setPreferredSize(new Dimension(60, getHeight()));
         sideBar.setLayout(new BoxLayout(sideBar, BoxLayout.Y_AXIS));
 
-        RoundButton homeButton = new RoundButton(Icons.HOME, theme.getComponents4(), theme.getComponents5(), theme.getText2());
-        homeButton.setMaximumSize(new Dimension(40, 40));
-        homeButton.setMinimumSize(new Dimension(40, 40));
-        homeButton.setPreferredSize(new Dimension(40, 40));
-        homeButton.addActionListener(e -> {
-            changePanel(centerScrollPane);
-        });
+        Dimension buttonSize = new Dimension(40, 40);
+
+        RoundButton homeButton = new RoundButton(Icon.HOME, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+        homeButton.setMaximumSize(buttonSize);
+        homeButton.setMinimumSize(buttonSize);
+        homeButton.setPreferredSize(buttonSize);
+        homeButton.addActionListener(e -> changePanel(centerScrollPane));
         homeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        RoundButton addButton = new RoundButton(Icons.ADD, theme.getComponents4(), theme.getComponents5(), theme.getText2());
-        addButton.setMaximumSize(new Dimension(40, 40));
-        addButton.setMinimumSize(new Dimension(40, 40));
-        addButton.setPreferredSize(new Dimension(40, 40));
-        addButton.addActionListener(e -> {
-            changePanel(addPanel);
-        });
+        RoundButton addButton = new RoundButton(Icon.ADD, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+        addButton.setMaximumSize(buttonSize);
+        addButton.setMinimumSize(buttonSize);
+        addButton.setPreferredSize(buttonSize);
+        addButton.addActionListener(e -> changePanel(addPanel));
         addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         ImageIcon skinHeadImage = null;
         try {
-            URL skinHeadUrl = new URL("https://mc-heads.net/avatar/" + loadedProfile.name());
+            URL skinHeadUrl = new URL("https://mc-heads.net/avatar/" + loadedProfile.getMcProfile().getName());
             skinHeadImage = new ImageIcon(ImageIO.read(skinHeadUrl));
         } catch(IOException e) {
             Logger.error(e);
         }
 
         RoundButton profileButton = new RoundButton(skinHeadImage, theme.getBackground(), theme.getBackground());
-        profileButton.setMaximumSize(new Dimension(40, 40));
-        profileButton.setMinimumSize(new Dimension(40, 40));
-        profileButton.setPreferredSize(new Dimension(40, 40));
-        profileButton.addActionListener(e -> {
-            changePanel(accountPanel);
-        });
+        profileButton.setMaximumSize(buttonSize);
+        profileButton.setMinimumSize(buttonSize);
+        profileButton.setPreferredSize(buttonSize);
+        profileButton.addActionListener(e -> changePanel(accountPanel));
         profileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        sideBar.add(filler(sideBar.getWidth(), 15));
+        sideBar.add(PanelTool.filler(sideBar.getWidth(), 15));
         sideBar.add(homeButton);
-        sideBar.add(filler(sideBar.getWidth(), 15));
+        sideBar.add(PanelTool.filler(sideBar.getWidth(), 15));
         sideBar.add(addButton);
         sideBar.add(Box.createVerticalGlue());
         sideBar.add(profileButton);
-        sideBar.add(filler(sideBar.getWidth(), 15));
+        sideBar.add(PanelTool.filler(sideBar.getWidth(), 15));
     }
 
     private void createTopBar() {
@@ -147,18 +151,17 @@ public class MainPanel extends JPanel {
         logoLabel.setVerticalAlignment(JLabel.CENTER);
         logoLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        RoundButton modrinthButton = new RoundButton(Icons.GLOBUS, theme.getComponents4(), theme.getComponents5(), theme.getText2());
-        modrinthButton.setMaximumSize(new Dimension(40, 40));
-        modrinthButton.setMinimumSize(new Dimension(40, 40));
-        modrinthButton.setPreferredSize(new Dimension(40, 40));
+        Dimension buttonSize = new Dimension(40, 40);
+
+        RoundButton modrinthButton = new RoundButton(Icon.GLOBUS, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+        modrinthButton.setMaximumSize(buttonSize);
+        modrinthButton.setMinimumSize(buttonSize);
+        modrinthButton.setPreferredSize(buttonSize);
         modrinthButton.addActionListener(e -> {
-            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-            if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    desktop.browse(URI.create("https://modrinth.com/mods?g=categories:bta-babric"));
-                } catch(Exception ex) {
-                    Logger.error(ex);
-                }
+            try {
+                BrowserTool.open(URI.create("https://modrinth.com/mods?g=categories:bta-babric"));
+            } catch(Exception ex) {
+                Logger.error(ex);
             }
         });
         modrinthButton.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -172,28 +175,25 @@ public class MainPanel extends JPanel {
         }
 
         RoundButton babricDiscord = new RoundButton(discordIcon, theme.getComponents4(), theme.getComponents5());
-        babricDiscord.setMaximumSize(new Dimension(40, 40));
-        babricDiscord.setMinimumSize(new Dimension(40, 40));
-        babricDiscord.setPreferredSize(new Dimension(40, 40));
+        babricDiscord.setMaximumSize(buttonSize);
+        babricDiscord.setMinimumSize(buttonSize);
+        babricDiscord.setPreferredSize(buttonSize);
         babricDiscord.addActionListener(e -> {
-            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-            if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    desktop.browse(URI.create("https://discord.com/invite/jvwD8BKq5e"));
-                } catch(Exception ex) {
-                    Logger.error(ex);
-                }
+            try {
+                BrowserTool.open(URI.create("https://discord.com/invite/jvwD8BKq5e"));
+            } catch(Exception ex) {
+                Logger.error(ex);
             }
         });
         babricDiscord.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        topBar.add(filler(10, topBar.getHeight()));
+        topBar.add(PanelTool.filler(10, topBar.getHeight()));
         topBar.add(logoLabel);
         topBar.add(Box.createHorizontalGlue());
         topBar.add(modrinthButton);
-        topBar.add(filler(25, topBar.getHeight()));
+        topBar.add(PanelTool.filler(25, topBar.getHeight()));
         topBar.add(babricDiscord);
-        topBar.add(filler(30, topBar.getHeight()));
+        topBar.add(PanelTool.filler(30, topBar.getHeight()));
     }
 
     private void createCenterPanel() {
@@ -205,11 +205,15 @@ public class MainPanel extends JPanel {
         instancesPanel.setOpaque(false);
         instancesPanel.setLayout(new BoxLayout(instancesPanel, BoxLayout.Y_AXIS));
 
-        centerScrollPane = new RoundScrollPane(centerPanel, theme.getBackground(), true);
-        centerScrollPane.setBackground(null);
-        centerScrollPane.getViewport().setBackground(null);
-        centerScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        ((JScrollBar) centerScrollPane.getComponent(1)).setUI(new CustomScrollBarUI(theme.getBackground(), theme.getComponents3(), 4));
+        centerScrollPane = new RoundScrollPane(centerPanel, theme.getBackground(), theme.getComponents2(), true);
+
+        JScrollBar horizontalBar = centerScrollPane.getHorizontalScrollBar();
+        horizontalBar.setUI(new CustomScrollBarUI(theme.getComponents2(), 4, centerScrollPane.getBorderColor(), false));
+
+        JScrollBar verticalBar = centerScrollPane.getVerticalScrollBar();
+        verticalBar.setUI(new CustomScrollBarUI(theme.getComponents2(), 4, centerScrollPane.getBorderColor(), true));
+
+        centerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         centerScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         centerScrollPane.setEnabled(true);
 
@@ -231,30 +235,27 @@ public class MainPanel extends JPanel {
             JPanel emptyPanel = new JPanel();
             emptyPanel.setLayout(new BorderLayout());
 
-            RoundPanel instancePanel = new RoundPanel(theme.getComponents(), theme.getShadow());
+            RoundPanel instancePanel = new RoundPanel(theme.getComponents(), true);
             instancePanel.setLayout(new BoxLayout(instancePanel, BoxLayout.X_AXIS));
-
-            Dimension iconFillerSize = new Dimension(25, height);
-            Box.Filler iconFiller = new Box.Filler(iconFillerSize, iconFillerSize, iconFillerSize);
 
             ImageIcon originalImageIcon = instance.getIcon();
             ImageIcon scaledImageIcon = new ImageIcon(originalImageIcon.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
             ImageIcon roundedImageIcon = ImageTool.createRoundedIcon(scaledImageIcon, 10, theme.getComponents2());
+
             JLabel iconLabel = new JLabel(roundedImageIcon, SwingConstants.LEFT);
             iconLabel.setForeground(theme.getText());
             iconLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            Dimension nameFillerSize = new Dimension(25, height);
-            Box.Filler nameFiller = new Box.Filler(nameFillerSize, nameFillerSize, nameFillerSize);
 
             JLabel nameLabel = new JLabel(instance.getDisplayName());
             nameLabel.setForeground(theme.getText());
             nameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-            RoundButton folderButton = new RoundButton(Icons.FOLDER, theme.getComponents4(), theme.getComponents5(), theme.getText2());
-            folderButton.setMaximumSize(new Dimension(40, 40));
-            folderButton.setMinimumSize(new Dimension(40, 40));
-            folderButton.setPreferredSize(new Dimension(40, 40));
+            Dimension buttonSize = new Dimension(40, 40);
+
+            RoundButton folderButton = new RoundButton(Icon.FOLDER, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+            folderButton.setMaximumSize(buttonSize);
+            folderButton.setMinimumSize(buttonSize);
+            folderButton.setPreferredSize(buttonSize);
             folderButton.addActionListener(e -> {
                 try {
                     if(Desktop.isDesktopSupported()) {
@@ -276,46 +277,37 @@ public class MainPanel extends JPanel {
             Dimension folderFillerSize = new Dimension(25, height);
             Box.Filler folderFiller = new Box.Filler(folderFillerSize, folderFillerSize, folderFillerSize);
 
-            RoundButton editButton = new RoundButton(Icons.EDIT, theme.getComponents4(), theme.getComponents5(), theme.getText2());
-            editButton.setMaximumSize(new Dimension(40, 40));
-            editButton.setMinimumSize(new Dimension(40, 40));
-            editButton.setPreferredSize(new Dimension(40, 40));
+            RoundButton editButton = new RoundButton(Icon.EDIT, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+            editButton.setMaximumSize(buttonSize);
+            editButton.setMinimumSize(buttonSize);
+            editButton.setPreferredSize(buttonSize);
             editButton.addActionListener(e -> {
                 updateInstanceEditPanel(instance);
                 changePanel(instanceEditPanel);
             });
             editButton.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-            Dimension editFillerSize = new Dimension(25, height);
-            Box.Filler editFiller = new Box.Filler(editFillerSize, editFillerSize, editFillerSize);
-
-            RoundButton playButton = new RoundButton(Icons.PLAY, theme.getComponents4(), theme.getComponents5(), theme.getText2());
-            playButton.setMaximumSize(new Dimension(40, 40));
-            playButton.setMinimumSize(new Dimension(40, 40));
-            playButton.setPreferredSize(new Dimension(40, 40));
+            RoundButton playButton = new RoundButton(Icon.PLAY, theme.getComponents4(), theme.getComponents5(), theme.getText2());
+            playButton.setMaximumSize(buttonSize);
+            playButton.setMinimumSize(buttonSize);
+            playButton.setPreferredSize(buttonSize);
             playButton.addActionListener(e -> instance.start());
             playButton.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-            Dimension playFillerSize = new Dimension(25, height);
-            Box.Filler playFiller = new Box.Filler(playFillerSize, playFillerSize, playFillerSize);
-
-            instancePanel.add(iconFiller);
+            instancePanel.add(PanelTool.filler(25, height));
             instancePanel.add(iconLabel);
-            instancePanel.add(nameFiller);
+            instancePanel.add(PanelTool.filler(25, height));
             instancePanel.add(nameLabel);
             instancePanel.add(Box.createHorizontalGlue());
             instancePanel.add(folderButton);
             instancePanel.add(folderFiller);
             instancePanel.add(editButton);
-            instancePanel.add(editFiller);
+            instancePanel.add(PanelTool.filler(25, height));
             instancePanel.add(playButton);
-            instancePanel.add(playFiller);
-
-            Dimension rightEmptyFillerSize = new Dimension(25, height);
-            Box.Filler rightEmptyFiller = new Box.Filler(rightEmptyFillerSize, rightEmptyFillerSize, rightEmptyFillerSize);
+            instancePanel.add(PanelTool.filler(25, height));
 
             emptyPanel.add(instancePanel, BorderLayout.WEST);
-            emptyPanel.add(rightEmptyFiller, BorderLayout.EAST);
+            emptyPanel.add(PanelTool.filler(25, height), BorderLayout.EAST);
 
             instancesPanel.add(instancePanel);
             instancesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
@@ -325,9 +317,9 @@ public class MainPanel extends JPanel {
             }
         }
 
-        centerPanel.add(filler(20, centerPanel.getHeight()));
+        centerPanel.add(PanelTool.filler(20, centerPanel.getHeight()));
         centerPanel.add(instancesPanel);
-        centerPanel.add(filler(10, centerPanel.getHeight()));
+        centerPanel.add(PanelTool.filler(10, centerPanel.getHeight()));
 
         revalidate();
         repaint();
@@ -338,7 +330,7 @@ public class MainPanel extends JPanel {
         addPanel.setBackground(null);
         addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.X_AXIS));
 
-        RoundPanel createInstancePanel = new RoundPanel(theme.getComponents(), theme.getShadow()) {
+        RoundPanel createInstancePanel = new RoundPanel(theme.getComponents(), true) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -357,9 +349,6 @@ public class MainPanel extends JPanel {
 
         JTextField nameField = new JTextField();
         nameField.setBounds(48, 103, 150, 30);
-        nameField.setMaximumSize(new Dimension(150, 30));
-        nameField.setMinimumSize(new Dimension(150, 30));
-        nameField.setPreferredSize(new Dimension(150, 30));
         nameField.setBackground(theme.getComponents2());
         nameField.setForeground(theme.getText());
         nameField.setBorder(new LineBorder(theme.getComponents2(), 2));
@@ -386,26 +375,17 @@ public class MainPanel extends JPanel {
                 .toArray(String[]::new);
         JComboBox<String> versionComboBox = new JComboBox<>(versionList);
         versionComboBox.setBounds(48, 158, 150, 30);
-        versionComboBox.setMaximumSize(new Dimension(150, 30));
-        versionComboBox.setMinimumSize(new Dimension(150, 30));
-        versionComboBox.setPreferredSize(new Dimension(150, 30));
         versionComboBox.setBackground(theme.getComponents2());
         versionComboBox.setForeground(theme.getText());
         versionComboBox.setUI(new CustomComboBoxUI(theme.getComponents2(), theme.getComponents2(), theme.getText(), theme.getComponents2()));
 
         RoundCheckBox babricCheckBox = new RoundCheckBox("Babric", theme.getText(), theme.getComponents2(), theme.getText());
         babricCheckBox.setBounds(48, 213, 65, 20);
-        babricCheckBox.setMaximumSize(new Dimension(65, 20));
-        babricCheckBox.setMinimumSize(new Dimension(65, 20));
-        babricCheckBox.setPreferredSize(new Dimension(65, 20));
         babricCheckBox.setBackground(null);
         babricCheckBox.setForeground(theme.getText());
 
         RoundButton createInstanceButton = new RoundButton("Create", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         createInstanceButton.setBounds(93, 258, 60, 40);
-        createInstanceButton.setMaximumSize(new Dimension(60, 40));
-        createInstanceButton.setMinimumSize(new Dimension(60, 40));
-        createInstanceButton.setPreferredSize(new Dimension(60, 40));
         createInstanceButton.addActionListener(e -> {
             String name = nameField.getText();
             String selectedVersion = (String) versionComboBox.getSelectedItem();
@@ -422,9 +402,6 @@ public class MainPanel extends JPanel {
 
         RoundButton importButton = new RoundButton("Import", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         importButton.setBounds(293, 160, 60, 40);
-        importButton.setMaximumSize(new Dimension(60, 40));
-        importButton.setMinimumSize(new Dimension(60, 40));
-        importButton.setPreferredSize(new Dimension(60, 40));
         importButton.addActionListener(e -> {
             importInstance();
         });
@@ -445,7 +422,7 @@ public class MainPanel extends JPanel {
         accountPanel.setBackground(null);
         accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.X_AXIS));
 
-        RoundPanel accountInfoPanel = new RoundPanel(theme.getComponents(), theme.getShadow());
+        RoundPanel accountInfoPanel = new RoundPanel(theme.getComponents(), true);
         accountInfoPanel.setMaximumSize(new Dimension(400, 400));
         accountInfoPanel.setMinimumSize(new Dimension(400, 400));
         accountInfoPanel.setPreferredSize(new Dimension(400, 400));
@@ -453,23 +430,23 @@ public class MainPanel extends JPanel {
 
         ImageIcon skinImage = null;
         try {
-            URL skinUrl = new URL("https://mc-heads.net/body/" + loadedProfile.name() + "/right");
+            URL skinUrl = new URL("https://mc-heads.net/body/" + loadedProfile.getMcProfile().getName() + "/right");
             skinImage = ImageTool.changeImageWidth(new ImageIcon(ImageIO.read(skinUrl).getScaledInstance(138, 330, Image.SCALE_SMOOTH)), 200);
         } catch(IOException e) {
             Logger.error(e);
         }
 
-        JLabel skinLabel = new JLabel(loadedProfile.name(), skinImage, SwingConstants.LEFT);
+        JLabel skinLabel = new JLabel(loadedProfile.getMcProfile().getName(), skinImage, SwingConstants.LEFT);
         skinLabel.setForeground(theme.getText());
         skinLabel.setHorizontalTextPosition(JLabel.CENTER);
         skinLabel.setVerticalTextPosition(JLabel.TOP);
         skinLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        JLabel nameLabel = new JLabel("Name: " + loadedProfile.name());
+        JLabel nameLabel = new JLabel("Name: " + loadedProfile.getMcProfile().getName());
         nameLabel.setForeground(theme.getText());
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel UUIDLabel = new JLabel("UUID: " + loadedProfile.id());
+        JLabel UUIDLabel = new JLabel("UUID: " + loadedProfile.getMcProfile().getId());
         UUIDLabel.setForeground(theme.getText());
         UUIDLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -502,7 +479,7 @@ public class MainPanel extends JPanel {
     private void updateInstanceEditPanel(Instance instance) {
         instanceEditPanel.removeAll();
 
-        RoundPanel settingsPanel = new RoundPanel(theme.getComponents(), theme.getShadow());
+        RoundPanel settingsPanel = new RoundPanel(theme.getComponents(), true);
         settingsPanel.setMaximumSize(new Dimension(400, 400));
         settingsPanel.setMinimumSize(new Dimension(400, 400));
         settingsPanel.setPreferredSize(new Dimension(400, 400));
@@ -513,30 +490,34 @@ public class MainPanel extends JPanel {
         JLabel memoryLabel = new JLabel("Memory: " + memory[0]);
         memoryLabel.setForeground(theme.getText());
         memoryLabel.setBounds(25, 25, 350, 30);
-        memoryLabel.setMinimumSize(new Dimension(350, 30));
-        memoryLabel.setMaximumSize(new Dimension(350, 30));
-        memoryLabel.setPreferredSize(new Dimension(350, 30));
 
         JScrollBar memoryScrollBar = new JScrollBar(JScrollBar.HORIZONTAL);
-        memoryScrollBar.setUnitIncrement(16);
+        memoryScrollBar.setUnitIncrement(512);
+        memoryScrollBar.setBlockIncrement(512);
         memoryScrollBar.setMaximum(20490);
         memoryScrollBar.setMinimum(0);
         memoryScrollBar.setValue(memory[0]);
         memoryScrollBar.setBounds(25, 60, 350, 20);
-        memoryScrollBar.setMinimumSize(new Dimension(350, 20));
-        memoryScrollBar.setMaximumSize(new Dimension(350, 20));
-        memoryScrollBar.setPreferredSize(new Dimension(350, 20));
-        memoryScrollBar.setUI(new CustomScrollBarUI(theme.getComponents2(), theme.getComponents3()));
+        memoryScrollBar.setUI(new CustomScrollBarUI(theme.getComponents3()));
+        memoryScrollBar.setBackground(theme.getComponents2());
         memoryScrollBar.addAdjustmentListener(e -> {
-            memory[0] = memoryScrollBar.getValue();
+            memory[0] = (e.getValue() / 512) * 512;
             memoryLabel.setText("Memory: " + memory[0]);
+        });
+        memoryScrollBar.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int rawValue = memoryScrollBar.getValue();
+                int steppedValue = (rawValue / 512) * 512;
+
+                if(rawValue != steppedValue) {
+                    memoryScrollBar.setValue(steppedValue);
+                }
+            }
         });
 
         RoundButton saveButton = new RoundButton("Save", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         saveButton.setBounds(170, 335, 60, 40);
-        saveButton.setMaximumSize(new Dimension(60, 40));
-        saveButton.setMinimumSize(new Dimension(60, 40));
-        saveButton.setPreferredSize(new Dimension(60, 40));
         saveButton.addActionListener(e -> {
             instance.setMemory(memory[0]);
             Logger.log("Test");
@@ -649,17 +630,5 @@ public class MainPanel extends JPanel {
             return false;
         }
         return true;
-    }
-
-    private Box.Filler filler(int width, int height) {
-        Dimension fillerDimension = new Dimension(width, height);
-
-        Box.Filler filler = new Box.Filler(fillerDimension, fillerDimension, fillerDimension);
-        filler.setMinimumSize(fillerDimension);
-        filler.setMaximumSize(fillerDimension);
-        filler.setPreferredSize(fillerDimension);
-        filler.setOpaque(false);
-
-        return filler;
     }
 }

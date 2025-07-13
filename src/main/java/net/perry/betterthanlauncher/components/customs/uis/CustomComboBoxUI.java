@@ -1,4 +1,4 @@
-package net.perry.betterthanlauncher.components.uis;
+package net.perry.betterthanlauncher.components.customs.uis;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicArrowButton;

@@ -1,6 +1,6 @@
 package net.perry.betterthanlauncher.components;
 
-public enum Icons {
+public enum Icon {
     PLAY,
     EDIT,
     FOLDER,

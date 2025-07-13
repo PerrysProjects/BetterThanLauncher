@@ -1,4 +1,4 @@
-package net.perry.betterthanlauncher.components;
+package net.perry.betterthanlauncher.components.customs;
 
 import javax.swing.*;
 import java.awt.*;

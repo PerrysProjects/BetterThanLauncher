@@ -1,4 +1,6 @@
-package net.perry.betterthanlauncher.components.uis;
+package net.perry.betterthanlauncher.components.customs.uis;
+
+import net.perry.betterthanlauncher.components.customs.RoundScrollPane;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -6,27 +8,31 @@ import java.awt.*;
 import java.io.Serial;
 
 public class CustomScrollBarUI extends BasicScrollBarUI {
-    private final Color track;
     private final Color thumb;
+    private final int trackBorder;
+    private final Color border;
+    private final boolean top;
 
     private final Dimension d = new Dimension();
 
-    private final int trackBorder;
-
-    public CustomScrollBarUI(Color track, Color thumb) {
-        this(track, thumb, 0);
+    public CustomScrollBarUI(Color thumb) {
+        this(thumb, 0);
     }
 
-    public CustomScrollBarUI(Color track, Color thumb, int trackBorder) {
-        this.track = track;
+    public CustomScrollBarUI(Color thumb, int trackBorder) {
+        this(thumb, trackBorder, null, false);
+    }
+
+    public CustomScrollBarUI(Color thumb, int trackBorder, Color border, boolean top) {
         this.thumb = thumb;
         this.trackBorder = trackBorder;
+        this.border = border;
+        this.top = top;
     }
 
     @Override
     protected JButton createDecreaseButton(int orientation) {
         return new JButton() {
-
             @Serial
             private static final long serialVersionUID = -3592643796245558676L;
 
@@ -40,7 +46,6 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createIncreaseButton(int orientation) {
         return new JButton() {
-
             @Serial
             private static final long serialVersionUID = 1L;
 
@@ -56,11 +61,14 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g2.setPaint(track);
-        g2.fillRect(r.x, r.y, r.width, r.height);
-
-        g2.setPaint(track);
-        g2.drawRect(r.x, r.y, r.width, r.height);
+        if(border != null) {
+            g2.setColor(border);
+            if(top) {
+                g2.drawLine(0, 0, c.getWidth(), 0);
+            } else {
+                g2.drawLine(0, 0, 0, c.getHeight());
+            }
+        }
 
         g2.dispose();
     }
@@ -79,10 +87,20 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
         int width = r.width - 2 * trackBorder;
         int height = r.height - 2 * trackBorder;
 
-        if (width % 2 != 0) width--;
-        if (height % 2 != 0) height--;
+        if(border != null) {
+            if(top) {
+                y += 2;
+                height -= 2;
+            } else {
+                x += 2;
+                width -= 2;
+            }
+        }
 
-        if (arc % 2 != 0) arc--;
+        if(width % 2 != 0) width--;
+        if(height % 2 != 0) height--;
+
+        if(arc % 2 != 0) arc--;
 
         g2.fillRoundRect(x, y, width, height, arc, arc);
         g2.setPaint(thumb);
@@ -95,5 +113,21 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     protected void setThumbBounds(int x, int y, int width, int height) {
         super.setThumbBounds(x, y, width, height);
         scrollbar.repaint();
+    }
+
+    public Color getThumb() {
+        return thumb;
+    }
+
+    public int getTrackBorder() {
+        return trackBorder;
+    }
+
+    public Color getBorder() {
+        return border;
+    }
+
+    public boolean isTop() {
+        return top;
     }
 }

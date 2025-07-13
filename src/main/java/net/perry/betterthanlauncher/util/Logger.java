@@ -26,6 +26,6 @@ public class Logger {
 
     public static void error(String message, Exception e) {
         message += (e != null) ? e.getMessage() : "";
-        System.out.printf("[%s] ERROR: %s%n", timestamp(), message);
+        System.err.printf("[%s] ERROR: %s%n", timestamp(), message);
     }
 }

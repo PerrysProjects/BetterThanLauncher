@@ -2,7 +2,7 @@ package net.perry.betterthanlauncher.components.frames;
 
 import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.components.panels.AuthPanel;
-import net.raphimc.mcauth.step.msa.StepMsaDeviceCode;
+import net.raphimc.minecraftauth.step.msa.StepMsaDeviceCode;
 
 import javax.swing.*;
 

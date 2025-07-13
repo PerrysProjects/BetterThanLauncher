@@ -5,9 +5,11 @@ import net.perry.betterthanlauncher.components.panels.MainPanel;
 import net.perry.betterthanlauncher.instances.Instance;
 import net.perry.betterthanlauncher.instances.Versions;
 import net.perry.betterthanlauncher.util.Auth;
+import net.perry.betterthanlauncher.util.ExitCode;
 import net.perry.betterthanlauncher.util.Logger;
+import net.perry.betterthanlauncher.util.OsManager;
 import net.perry.betterthanlauncher.util.files.Config;
-import net.perry.betterthanlauncher.util.files.FileDownloader;
+import net.perry.betterthanlauncher.util.files.LibrariesManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,13 +22,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 public class Main extends JFrame {
     public static String name;
     public static String version;
-
-    public static String os;
 
     public static Image icon;
     public static String path;
@@ -42,28 +41,45 @@ public class Main extends JFrame {
         name = "BetterThanLauncher";
         version = "1.0.1";
 
-        os = System.getProperty("os.name").toLowerCase();
-
         try {
-            icon = ImageIO.read(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("icons/btl_icon.png")));
+            icon = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("icons/btl_icon.png"));
         } catch(IOException e) {
             Logger.error(e);
         }
 
         if(!isConnectedToInternet()) {
-            SystemTray tray = SystemTray.getSystemTray();
+            if(!SystemTray.isSupported()) {
+                if(OsManager.isLinux()) {
+                    try {
+                        Runtime.getRuntime().exec(new String[]{
+                                "notify-send",
+                                "No internet connection available!",
+                                "Unable to establish an internet connection. Please check your network settings and try again."
+                        });
+                    } catch (Exception e) {
+                        Logger.error(e);
+                    }
+                }
+            } else {
+                SystemTray tray = SystemTray.getSystemTray();
+                TrayIcon trayIcon = new TrayIcon(icon, "Tray Demo");
+                trayIcon.setImageAutoSize(true);
+                trayIcon.setToolTip("System tray icon demo");
 
-            TrayIcon trayIcon = new TrayIcon(icon, "Tray Demo");
-            trayIcon.setImageAutoSize(true);
-            trayIcon.setToolTip("System tray icon demo");
-            try {
-                tray.add(trayIcon);
-            } catch(AWTException e) {
-                Logger.error(e);
+                try {
+                    tray.add(trayIcon);
+                } catch (AWTException e) {
+                    Logger.error(e);
+                }
+
+                trayIcon.displayMessage(
+                        "No internet connection available!",
+                        "Unable to establish an internet connection. Please check your network settings and try again.",
+                        TrayIcon.MessageType.ERROR
+                );
             }
 
-            trayIcon.displayMessage("No internet connection available!", "Unable to establish an internet connection. Please check your network settings and try again.", TrayIcon.MessageType.ERROR);
-            System.exit(80);
+            System.exit(ExitCode.NO_INTERNET.code);
         } else {
             loadFiles();
 
@@ -88,7 +104,7 @@ public class Main extends JFrame {
                 frame.setContentPane(new MainPanel());
             });
 
-            Logger.log("Starting launcher on " + os + " OS!");
+            Logger.log("Starting launcher on " + OsManager.getOSName() + " OS!");
         }
     }
 
@@ -116,13 +132,13 @@ public class Main extends JFrame {
         } catch(IOException e) {
             Logger.error(e);
         }
-        System.exit(81);
+        System.exit(ExitCode.RESTART.code);
     }
 
     private static boolean isConnectedToInternet() {
         try {
-            final URL url = new URL("http://www.google.com");
-            final URLConnection conn = url.openConnection();
+            URL url = new URL("http://www.google.com");
+            URLConnection conn = url.openConnection();
             conn.connect();
             conn.getInputStream().close();
             return true;
@@ -143,27 +159,11 @@ public class Main extends JFrame {
         config.writeConfig("java_path", "%JAVA_HOME%");
         config.writeConfig("theme", "dark");
 
-        // JWGL 2
-        downloadLibraries("https://libraries.minecraft.net/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar");
-        downloadLibraries("https://libraries.minecraft.net/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar");
+        LibrariesManager.download();
 
-        downloadLibraries("https://maven.glass-launcher.net/babric/org/lwjgl/lwjgl/lwjgl/2.9.4-babric.1/lwjgl-2.9.4-babric.1.jar");
-        downloadLibraries("https://maven.glass-launcher.net/babric/org/lwjgl/lwjgl/lwjgl_util/2.9.4-babric.1/lwjgl_util-2.9.4-babric.1.jar");
+        Versions.download();
 
-        downloadLibraries("https://libraries.minecraft.net/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-osx.jar");
-        downloadLibraries("https://maven.glass-launcher.net/babric/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-babric.1/lwjgl-platform-2.9.4-babric.1-natives-linux.jar");
-        downloadLibraries("https://maven.glass-launcher.net/babric/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-babric.1/lwjgl-platform-2.9.4-babric.1-natives-windows.jar");
-        downloadLibraries("https://maven.glass-launcher.net/babric/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-babric.1/lwjgl-platform-2.9.4-babric.1-natives-osx.jar");
-
-        // JWGL 3
-        downloadLibraries("https://libraries.minecraft.net/org/apache/logging/log4j/log4j-api/2.19.0/log4j-api-2.19.0.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/apache/logging/log4j/log4j-core/2.19.0/log4j-core-2.19.0.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/apache/logging/log4j/log4j-slf4j2-impl/2.19.0/log4j-slf4j2-impl-2.19.0.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar");
-
-        downloadLibraries("https://build.lwjgl.org/release/3.3.3/bin/lwjgl-freetype/lwjgl-freetype-natives-linux-arm32.jar");
+        /*downloadLibraries("https://build.lwjgl.org/release/3.3.3/bin/lwjgl-freetype/lwjgl-freetype-natives-linux-arm32.jar");
         downloadLibraries("https://build.lwjgl.org/release/3.3.3/bin/lwjgl-freetype/lwjgl-freetype-natives-linux-arm64.jar");
 
         downloadLibraries("https://build.lwjgl.org/release/3.3.3/bin/lwjgl-glfw/lwjgl-glfw-natives-linux-arm32.jar");
@@ -175,63 +175,7 @@ public class Main extends JFrame {
         downloadLibraries("https://build.lwjgl.org/release/3.3.3/bin/lwjgl-openal/lwjgl-openal-natives-linux-arm32.jar");
         downloadLibraries("https://build.lwjgl.org/release/3.3.3/bin/lwjgl-openal/lwjgl-openal-natives-linux-arm64.jar");
 
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl/3.3.3/lwjgl-3.3.3.jar");
-
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-freetype/3.3.3/lwjgl-freetype-3.3.3.jar");
-
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-glfw/3.3.3/lwjgl-glfw-3.3.3.jar");
-
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-jemalloc/3.3.3/lwjgl-jemalloc-3.3.3.jar");
-
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3.jar");
-
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-opengl/3.3.3/lwjgl-opengl-3.3.3.jar");
-
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-linux.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-macos-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-macos.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-windows-arm64.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-windows-x86.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3-natives-windows.jar");
-        downloadLibraries("https://libraries.minecraft.net/org/lwjgl/lwjgl-stb/3.3.3/lwjgl-stb-3.3.3.jar");
-
-        /*downloadLibraries("https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.8.0-beta4/slf4j-api-1.8.0-beta4.jar");
+        downloadLibraries("https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.8.0-beta4/slf4j-api-1.8.0-beta4.jar");
         downloadLibraries("https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-slf4j18-impl/2.16.0/log4j-slf4j18-impl-2.16.0.jar");
         downloadLibraries("https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.16.0/log4j-core-2.16.0.jar");
         downloadLibraries("https://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar");
@@ -253,37 +197,5 @@ public class Main extends JFrame {
         downloadLibraries("https://maven.fabricmc.net/org/ow2/asm/asm-commons/9.3/asm-commons-9.3.jar");
         downloadLibraries("https://maven.fabricmc.net/org/ow2/asm/asm-tree/9.3/asm-tree-9.3.jar");
         downloadLibraries("https://maven.fabricmc.net/org/ow2/asm/asm-util/9.3/asm-util-9.3.jar");*/
-
-        createFolder("versions");
-
-        for(Versions.VersionInfo version : Versions.getAll()) {
-            String folderName = version.getFileName().toLowerCase();
-            String versionDir = "versions/" + folderName;
-
-            createFolder(versionDir);
-
-            File jarFile = new File(path + "/" + versionDir + "/client.jar");
-
-            if(!jarFile.exists()) {
-                FileDownloader.download(version.getLink(), versionDir + "/");
-            }
-        }
-    }
-
-    private static void createFolder(String name) {
-        File folder = new File(path + "/" + name);
-        if(!folder.exists() && !folder.mkdirs()) {
-            Logger.log("Failed to create " + name + " folder.");
-        }
-    }
-
-    private static void downloadLibraries(String url) {
-        String[] splitUrl = url.split("/");
-        StringBuilder path = new StringBuilder("libraries");
-        for(int i = 3; i < splitUrl.length - 1; i++) {
-            path.append("/").append(splitUrl[i]);
-        }
-        createFolder(path.toString());
-        FileDownloader.download(url, path + "/");
     }
 }
