@@ -9,13 +9,13 @@ import javax.swing.*;
 public class AuthFrame extends JFrame {
     public AuthFrame(StepMsaDeviceCode.MsaDeviceCode msaDeviceCode) {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setTitle(Main.name + " | Authentication");
+        setTitle(Main.NAME + " | Authentication");
         setContentPane(new AuthPanel(msaDeviceCode));
         pack();
         setSize(400, 300);
         setResizable(false);
         setLocationRelativeTo(null);
-        setIconImage(Main.icon);
+        setIconImage(Main.ICON);
 
         setVisible(true);
     }

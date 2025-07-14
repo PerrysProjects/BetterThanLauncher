@@ -1,5 +1,6 @@
 package net.perry.betterthanlauncher.components.customs.uis;
 
+import net.perry.betterthanlauncher.components.customs.RoundComponent;
 import net.perry.betterthanlauncher.components.customs.RoundScrollPane;
 
 import javax.swing.*;
@@ -89,11 +90,11 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 
         if(border != null) {
             if(top) {
-                y += 2;
-                height -= 2;
+                y += RoundComponent.borderThickness;
+                height -= RoundComponent.borderThickness;
             } else {
-                x += 2;
-                width -= 2;
+                x += RoundComponent.borderThickness;
+                width -= RoundComponent.borderThickness;
             }
         }
 

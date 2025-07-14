@@ -7,7 +7,6 @@ import net.lenni0451.commons.httpclient.HttpClient;
 import net.perry.betterthanlauncher.Main;
 import net.perry.betterthanlauncher.components.frames.AuthFrame;
 import net.raphimc.minecraftauth.MinecraftAuth;
-import net.raphimc.minecraftauth.step.java.StepMCProfile;
 import net.raphimc.minecraftauth.step.java.session.StepFullJavaSession;
 import net.raphimc.minecraftauth.step.msa.StepMsaDeviceCode;
 
@@ -25,7 +24,7 @@ public class Auth {
     private AuthFrame authFrame;
 
     public Auth() {
-        file = new File(Main.path + "/profile.json");
+        file = new File(Main.PATH + "/profile.json");
         if(file.exists()) {
             try(FileReader reader = new FileReader(file)) {
                 JsonObject serializedProfile = JsonParser.parseReader(reader).getAsJsonObject();

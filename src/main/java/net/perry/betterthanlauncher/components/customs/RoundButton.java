@@ -11,11 +11,11 @@ import java.awt.event.MouseEvent;
 
 public class RoundButton extends JButton {
     private String text;
-    private net.perry.betterthanlauncher.components.Icon icon;
+    private Icon icon;
     private ImageIcon imageIcon;
-    private Color background;
-    private Color hoverBackground;
-    private Color foreground;
+    private final Color background;
+    private final Color hoverBackground;
+    private final Color foreground;
 
     private boolean hoverButton;
 

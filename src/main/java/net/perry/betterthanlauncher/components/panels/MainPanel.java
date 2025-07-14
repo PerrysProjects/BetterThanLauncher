@@ -13,6 +13,7 @@ import net.perry.betterthanlauncher.components.Theme;
 import net.perry.betterthanlauncher.instances.Versions;
 import net.perry.betterthanlauncher.util.Auth;
 import net.perry.betterthanlauncher.util.Logger;
+import net.perry.betterthanlauncher.util.OsManager;
 import net.perry.betterthanlauncher.util.files.Config;
 import net.perry.betterthanlauncher.util.tool.BrowserTool;
 import net.perry.betterthanlauncher.util.tool.ImageTool;
@@ -44,7 +45,9 @@ public class MainPanel extends JPanel {
     private final String path;
     private final Config config;
     private Theme theme;
+
     private Map<String, Instance> instances;
+
     private final Auth auth;
     private final StepFullJavaSession.FullJavaSession loadedProfile;
 
@@ -59,11 +62,13 @@ public class MainPanel extends JPanel {
     private RoundPanel instanceEditPanel;
 
     public MainPanel() {
-        path = Main.path;
-        config = Main.config;
+        path = Main.PATH;
+        config = Main.CONFIG;
         theme = Theme.DARK;
-        instances = Main.instances;
-        auth = Main.auth;
+
+        instances = Instance.getInstances();
+
+        auth = Main.AUTH;
         loadedProfile = auth.getLoadedProfile();
 
         if(config.getValue("theme") != null) {
@@ -205,7 +210,7 @@ public class MainPanel extends JPanel {
         instancesPanel.setOpaque(false);
         instancesPanel.setLayout(new BoxLayout(instancesPanel, BoxLayout.Y_AXIS));
 
-        centerScrollPane = new RoundScrollPane(centerPanel, theme.getBackground(), theme.getComponents2(), true);
+        centerScrollPane = new RoundScrollPane(centerPanel, theme.getBackground(), theme.getComponents2(), true, true);
 
         JScrollBar horizontalBar = centerScrollPane.getHorizontalScrollBar();
         horizontalBar.setUI(new CustomScrollBarUI(theme.getComponents2(), 4, centerScrollPane.getBorderColor(), false));
@@ -326,7 +331,7 @@ public class MainPanel extends JPanel {
     }
 
     private void createAddPanel() {
-        addPanel = new RoundPanel(theme.getBackground(), true);
+        addPanel = new RoundPanel(theme.getBackground(), theme.getComponents2(), true, true);
         addPanel.setBackground(null);
         addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.X_AXIS));
 
@@ -347,12 +352,12 @@ public class MainPanel extends JPanel {
         createInstancePanel.setPreferredSize(new Dimension(400, 400));
         createInstancePanel.setLayout(null);
 
-        JTextField nameField = new JTextField();
+        JTextField nameField = new JTextField("Enter name");
         nameField.setBounds(48, 103, 150, 30);
         nameField.setBackground(theme.getComponents2());
         nameField.setForeground(theme.getText());
+        nameField.setCaretColor(theme.getText());
         nameField.setBorder(new LineBorder(theme.getComponents2(), 2));
-        nameField.setText("Enter name");
         nameField.setFont(nameField.getFont().deriveFont(Font.BOLD, 12f));
         nameField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
@@ -418,7 +423,7 @@ public class MainPanel extends JPanel {
     }
 
     private void createAccountPanel() {
-        accountPanel = new RoundPanel(theme.getBackground(), true);
+        accountPanel = new RoundPanel(theme.getBackground(), theme.getComponents2(), true, true);
         accountPanel.setBackground(null);
         accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.X_AXIS));
 
@@ -472,7 +477,7 @@ public class MainPanel extends JPanel {
     }
 
     private void createInstanceEditPanel() {
-        instanceEditPanel = new RoundPanel(theme.getBackground(), true);
+        instanceEditPanel = new RoundPanel(theme.getBackground(), theme.getComponents2(), true, true);
         instanceEditPanel.setLayout(new BoxLayout(instanceEditPanel, BoxLayout.X_AXIS));
     }
 
@@ -516,32 +521,48 @@ public class MainPanel extends JPanel {
             }
         });
 
+        String javaExecutableLabel = OsManager.isWindows() ? "java.exe" : "java";
+        String javaPathLabelText = String.format("Java Path (e.g. %%JAVA_HOME%% or path/to/%s)", javaExecutableLabel);
+        String fileChooserTitle = "Select " + javaExecutableLabel;
+
+        JLabel javaLabel = new JLabel(javaPathLabelText);
+        javaLabel.setForeground(theme.getText());
+        javaLabel.setBounds(25, 100, 350, 20);
+
+        JTextField javaPathField = new JTextField(instance.getJavaPath());
+        javaPathField.setBounds(25, 130, 260, 25);
+        javaPathField.setBackground(theme.getComponents2());
+        javaPathField.setForeground(theme.getText());
+        javaPathField.setCaretColor(theme.getText());
+        javaPathField.setBorder(new LineBorder(theme.getComponents2(), 2));
+        javaPathField.setFont(javaPathField.getFont().deriveFont(Font.BOLD, 12f));
+
+        RoundButton browseButton = new RoundButton("Select", theme.getComponents4(), theme.getComponents5(), theme.getText2());
+        browseButton.setBounds(295, 130, 80, 25);
+        browseButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setDialogTitle(fileChooserTitle);
+            int result = fileChooser.showOpenDialog(settingsPanel);
+            if(result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                javaPathField.setText(selectedFile.getAbsolutePath());
+            }
+        });
+
         RoundButton saveButton = new RoundButton("Save", theme.getComponents4(), theme.getComponents5(), theme.getText2());
         saveButton.setBounds(170, 335, 60, 40);
         saveButton.addActionListener(e -> {
             instance.setMemory(memory[0]);
-            Logger.log("Test");
-            Logger.log(String.valueOf(instance.getConfig().getValue("memory")));
+            instance.setJavaPath(javaPathField.getText());
         });
 
         settingsPanel.add(memoryLabel);
         settingsPanel.add(memoryScrollBar);
+        settingsPanel.add(javaLabel);
+        settingsPanel.add(javaPathField);
+        settingsPanel.add(browseButton);
         settingsPanel.add(saveButton);
-
-
-        /*JPanel modPanel = new JPanel();
-        modPanel.setBackground(null);
-        modPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-
-
-        JScrollPane modScrollPane;
-        modScrollPane = new JScrollPane(modPanel);
-        modScrollPane.setBackground(null);
-        modScrollPane.getViewport().setBackground(null);
-        modScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        ((JScrollBar) modScrollPane.getComponent(1)).setUI(new CustomScrollBarUI(theme.getComponents2(), theme.getComponents3()));
-        modScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        modScrollPane.setEnabled(true);*/
 
         instanceEditPanel.add(Box.createHorizontalGlue());
         instanceEditPanel.add(settingsPanel);
@@ -580,9 +601,9 @@ public class MainPanel extends JPanel {
 
                         Versions.VersionInfo versionInfo = Versions.getByFileName(instanceVersion);
 
-                        if (versionInfo != null) {
+                        if(versionInfo != null) {
                             Instance.createInstance(folder.getName(), versionInfo, babric);
-                            instances = Main.instances;
+                            instances = Instance.getInstances();
 
                             updateCenterPanel();
                             changePanel(centerScrollPane);
@@ -622,7 +643,7 @@ public class MainPanel extends JPanel {
             folder.mkdirs();
 
             Instance.createInstance(name, versionInfo, babric);
-            instances = Main.instances;
+            instances = Instance.getInstances();
 
             updateCenterPanel();
             changePanel(centerScrollPane);

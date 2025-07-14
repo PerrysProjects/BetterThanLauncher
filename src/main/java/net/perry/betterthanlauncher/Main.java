@@ -21,28 +21,25 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Main extends JFrame {
-    public static String name;
-    public static String version;
+    public static String NAME;
+    public static String VERSION;
 
-    public static Image icon;
-    public static String path;
-    public static Config config;
+    public static Image ICON;
+    public static String PATH;
+    public static Config CONFIG;
 
-    public static Auth auth;
+    public static Auth AUTH;
 
-    public static Map<String, Instance> instances;
-
-    public static Frame frame;
+    public static Frame FRAME;
 
     public static void main(String[] args) throws InterruptedException, InvocationTargetException {
-        name = "BetterThanLauncher";
-        version = "1.0.1";
+        NAME = "BetterThanLauncher";
+        VERSION = "1.0.1";
 
         try {
-            icon = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("icons/btl_icon.png"));
+            ICON = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("icons/btl_icon.png"));
         } catch(IOException e) {
             Logger.error(e);
         }
@@ -62,7 +59,7 @@ public class Main extends JFrame {
                 }
             } else {
                 SystemTray tray = SystemTray.getSystemTray();
-                TrayIcon trayIcon = new TrayIcon(icon, "Tray Demo");
+                TrayIcon trayIcon = new TrayIcon(ICON, "Tray Demo");
                 trayIcon.setImageAutoSize(true);
                 trayIcon.setToolTip("System tray icon demo");
 
@@ -83,7 +80,7 @@ public class Main extends JFrame {
         } else {
             loadFiles();
 
-            instances = Instance.getInstances();
+            Instance.updateInstances();
 
             Versions.VersionInfo latestBTA = Versions.getAll().stream()
                     .filter(v -> v.getFileName().startsWith("bta_"))
@@ -94,14 +91,14 @@ public class Main extends JFrame {
             Instance.createInstance("Latest Babric version", latestBTA, true);
             Instance.createInstance("Vanilla Beta 1.7.3", Versions.getByFileName("b_1.7.3"), false);
 
-            auth = new Auth();
-            while(auth.getLoadedProfile() == null) {
-                auth.codeLogIn();
+            AUTH = new Auth();
+            while(AUTH.getLoadedProfile() == null) {
+                AUTH.codeLogIn();
             }
 
             SwingUtilities.invokeAndWait(() -> {
-                frame = new Frame();
-                frame.setContentPane(new MainPanel());
+                FRAME = new Frame();
+                FRAME.setContentPane(new MainPanel());
             });
 
             Logger.log("Starting launcher on " + OsManager.getOSName() + " OS!");
@@ -149,15 +146,15 @@ public class Main extends JFrame {
     }
 
     private static void loadFiles() {
-        path = System.getProperty("user.dir").replace("\\", "/");
+        PATH = System.getProperty("user.dir").replace("\\", "/");
 
-        config = new Config(path, "config", "conf");
-        config.writeComment("Do not change this!");
-        config.writeConfig("name", name);
-        config.writeConfig("version", version);
-        config.writeComment("This can be changed");
-        config.writeConfig("java_path", "%JAVA_HOME%");
-        config.writeConfig("theme", "dark");
+        CONFIG = new Config(PATH, "config", "conf");
+        CONFIG.writeComment("Do not change this!");
+        CONFIG.writeConfig("name", NAME);
+        CONFIG.writeConfig("version", VERSION);
+        CONFIG.writeComment("This can be changed");
+        CONFIG.writeConfig("java_path", "%JAVA_HOME%");
+        CONFIG.writeConfig("theme", "dark");
 
         LibrariesManager.download();
 

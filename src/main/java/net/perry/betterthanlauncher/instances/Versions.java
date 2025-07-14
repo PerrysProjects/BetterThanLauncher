@@ -95,7 +95,7 @@ public class Versions {
 
             createFolder(versionDir);
 
-            File jarFile = new File(Main.path + "/" + versionDir + "/client.jar");
+            File jarFile = new File(Main.PATH + "/" + versionDir + "/client.jar");
 
             if(!jarFile.exists()) {
                 FileDownloader.download(version.getLink(), versionDir + "/");
@@ -104,7 +104,7 @@ public class Versions {
     }
 
     private static void createFolder(String name) {
-        File folder = new File(Main.path + "/" + name);
+        File folder = new File(Main.PATH + "/" + name);
         if(!folder.exists() && !folder.mkdirs()) {
             Logger.log("Failed to create " + name + " folder.");
         }
