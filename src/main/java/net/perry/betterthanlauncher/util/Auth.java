@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Auth {
     private StepFullJavaSession.FullJavaSession loadedProfile;
-    private File file;
+    private final File file;
 
     private AuthFrame authFrame;
 

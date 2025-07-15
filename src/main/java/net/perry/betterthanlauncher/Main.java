@@ -1,5 +1,6 @@
 package net.perry.betterthanlauncher;
 
+import net.perry.betterthanlauncher.components.Theme;
 import net.perry.betterthanlauncher.components.frames.Frame;
 import net.perry.betterthanlauncher.components.panels.MainPanel;
 import net.perry.betterthanlauncher.instances.Instance;
@@ -29,6 +30,8 @@ public class Main extends JFrame {
     public static Image ICON;
     public static String PATH;
     public static Config CONFIG;
+
+    public static Theme THEME;
 
     public static Auth AUTH;
 
@@ -77,36 +80,43 @@ public class Main extends JFrame {
             }
 
             System.exit(ExitCode.NO_INTERNET.code);
-        } else {
-            loadFiles();
-
-            Instance.updateInstances();
-
-            Versions.VersionInfo latestBTA = Versions.getAll().stream()
-                    .filter(v -> v.getFileName().startsWith("bta_"))
-                    .findFirst()
-                    .orElse(null);
-
-            Instance.createInstance("Latest BTA version", latestBTA, false);
-            Instance.createInstance("Latest Babric version", latestBTA, true);
-            Instance.createInstance("Vanilla Beta 1.7.3", Versions.getByFileName("b_1.7.3"), false);
-
-            AUTH = new Auth();
-            while(AUTH.getLoadedProfile() == null) {
-                AUTH.codeLogIn();
-            }
-
-            SwingUtilities.invokeAndWait(() -> {
-                FRAME = new Frame();
-                FRAME.setContentPane(new MainPanel());
-            });
-
-            Logger.log("Starting launcher on " + OsManager.getOSName() + " OS!");
         }
+
+        loadFiles();
+
+        Instance.updateInstances();
+
+        Versions.VersionInfo latestBTA = Versions.getAll().stream()
+                .filter(v -> v.getFileName().startsWith("bta_"))
+                .findFirst()
+                .orElse(null);
+
+        Instance.createInstance("Latest BTA version", latestBTA, false);
+        Instance.createInstance("Latest Babric version", latestBTA, true);
+        Instance.createInstance("Vanilla Beta 1.7.3", Versions.getByFileName("b_1.7.3"), false);
+
+
+        if(CONFIG.getValue("theme") != null) {
+            THEME = Theme.valueOf(String.valueOf(CONFIG.getValue("theme")).toUpperCase());
+        }
+
+        AUTH = new Auth();
+        while(AUTH.getLoadedProfile() == null) {
+            AUTH.codeLogIn();
+        }
+
+        SwingUtilities.invokeAndWait(() -> {
+            FRAME = new Frame();
+            FRAME.setContentPane(new MainPanel());
+            FRAME.setVisible(true);
+        });
+
+        Logger.log("Starting launcher on " + OsManager.getOSName() + " OS!");
     }
 
     public static void restart() {
-        String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        //String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+
         File currentJar = null;
         try {
             currentJar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -119,7 +129,7 @@ public class Main extends JFrame {
         }
 
         ArrayList<String> command = new ArrayList<>();
-        command.add(javaBin);
+        command.add("java");
         command.add("-jar");
         command.add(currentJar.getPath());
 

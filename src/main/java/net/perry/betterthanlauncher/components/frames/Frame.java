@@ -17,7 +17,5 @@ public class Frame extends JFrame {
         setLocationRelativeTo(null);
         createBufferStrategy(4);
         setIconImage(Main.ICON);
-
-        setVisible(true);
     }
 }

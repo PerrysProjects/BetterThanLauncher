@@ -1,7 +1,6 @@
 package net.perry.betterthanlauncher.components.customs.uis;
 
-import net.perry.betterthanlauncher.components.customs.RoundComponent;
-import net.perry.betterthanlauncher.components.customs.RoundScrollPane;
+import net.perry.betterthanlauncher.components.customs.RoundStatics;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -61,16 +60,6 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if(border != null) {
-            g2.setColor(border);
-            if(top) {
-                g2.drawLine(0, 0, c.getWidth(), 0);
-            } else {
-                g2.drawLine(0, 0, 0, c.getHeight());
-            }
-        }
-
         g2.dispose();
     }
 
@@ -90,11 +79,11 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 
         if(border != null) {
             if(top) {
-                y += RoundComponent.borderThickness;
-                height -= RoundComponent.borderThickness;
+                y += RoundStatics.BORDER_THICKNESS;
+                height -= RoundStatics.BORDER_THICKNESS;
             } else {
-                x += RoundComponent.borderThickness;
-                width -= RoundComponent.borderThickness;
+                x += RoundStatics.BORDER_THICKNESS;
+                width -= RoundStatics.BORDER_THICKNESS;
             }
         }
 

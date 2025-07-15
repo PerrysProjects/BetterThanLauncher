@@ -50,14 +50,17 @@ public class RoundScrollPane extends JScrollPane {
         setBorder(BorderFactory.createEmptyBorder());
         if(border != null) {
             if(leftSided) {
-                setViewportBorder(BorderFactory.createEmptyBorder(RoundComponent.borderThickness, RoundComponent.borderThickness, 0, 0));
+                setViewportBorder(BorderFactory.createEmptyBorder(RoundStatics.BORDER_THICKNESS, RoundStatics.BORDER_THICKNESS, 0, 0));
             } else {
-                setViewportBorder(BorderFactory.createEmptyBorder(RoundComponent.borderThickness, 0, RoundComponent.borderThickness, 0));
+                setViewportBorder(BorderFactory.createEmptyBorder(RoundStatics.BORDER_THICKNESS, 0, RoundStatics.BORDER_THICKNESS, 0));
             }
         }
 
         getVerticalScrollBar().setOpaque(false);
         getHorizontalScrollBar().setOpaque(false);
+
+        getVerticalScrollBar().setUnitIncrement(16);
+        getHorizontalScrollBar().setUnitIncrement(16);
     }
 
     @Override
@@ -70,10 +73,10 @@ public class RoundScrollPane extends JScrollPane {
         int height = getHeight();
 
         if(shadow) {
-            g2.setColor(RoundComponent.shadowColor);
+            g2.setColor(RoundStatics.SHADOW_COLOR);
             g2.fillRoundRect(0, 0, width, height, radius, radius);
-            width -= RoundComponent.shadowThickness;
-            height -= RoundComponent.shadowThickness;
+            width -= RoundStatics.SHADOW_THICKNESS;
+            height -= RoundStatics.SHADOW_THICKNESS;
         } else if(leftSided) {
             width += radius;
             height += radius;
@@ -86,13 +89,13 @@ public class RoundScrollPane extends JScrollPane {
         g2.setClip(clip);
 
         if(image) {
-            Image backgroundImage = RoundComponent.backgroundImage;
-            int imgW = RoundComponent.backgroundImageSize;
-            int imgH = RoundComponent.backgroundImageSize;
+            Image backgroundImage = RoundStatics.BACKGROUND_IMAGE;
+            int imgW = RoundStatics.BACKGROUND_IMAGE_SIZE;
+            int imgH = RoundStatics.BACKGROUND_IMAGE_SIZE;
 
             Composite originalComposite = g2.getComposite();
 
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, RoundComponent.backgroundImageOpacity));
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, RoundStatics.BACKGROUND_IMAGE_OPACITY));
 
             for(int x = 0; x < width; x += imgW) {
                 for(int y = 0; y < height; y += imgH) {
@@ -107,7 +110,7 @@ public class RoundScrollPane extends JScrollPane {
 
         if(border != null) {
             g2.setColor(border);
-            g2.setStroke(new BasicStroke(RoundComponent.borderThickness));
+            g2.setStroke(new BasicStroke(RoundStatics.BORDER_THICKNESS));
             g2.drawRoundRect(0, 0, width, height, radius, radius);
         }
 

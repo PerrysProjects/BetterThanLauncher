@@ -2,7 +2,6 @@ package net.perry.betterthanlauncher.components.customs;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 public class RoundPanel extends JPanel {
@@ -57,10 +56,10 @@ public class RoundPanel extends JPanel {
         int height = getHeight();
 
         if(shadow) {
-            g2.setColor(RoundComponent.shadowColor);
+            g2.setColor(RoundStatics.SHADOW_COLOR);
             g2.fillRoundRect(0, 0, width, height, radius, radius);
-            width -= RoundComponent.shadowThickness;
-            height -= RoundComponent.shadowThickness;
+            width -= RoundStatics.SHADOW_THICKNESS;
+            height -= RoundStatics.SHADOW_THICKNESS;
         } else if(leftSided) {
             width += radius;
             height += radius;
@@ -69,17 +68,17 @@ public class RoundPanel extends JPanel {
         g2.setColor(background);
         g2.fillRoundRect(0, 0, width, height, radius, radius);
 
-        Shape clip = new RoundRectangle2D.Float(0, 0, width, height, radius, radius);
-        g2.setClip(clip);
-
         if(image) {
-            Image backgroundImage = RoundComponent.backgroundImage;
-            int imgW = RoundComponent.backgroundImageSize;
-            int imgH = RoundComponent.backgroundImageSize;
+            Shape clip = new RoundRectangle2D.Float(0, 0, width, height, radius, radius);
+            g2.setClip(clip);
+
+            Image backgroundImage = RoundStatics.BACKGROUND_IMAGE;
+            int imgW = RoundStatics.BACKGROUND_IMAGE_SIZE;
+            int imgH = RoundStatics.BACKGROUND_IMAGE_SIZE;
 
             Composite originalComposite = g2.getComposite();
 
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, RoundComponent.backgroundImageOpacity));
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, RoundStatics.BACKGROUND_IMAGE_OPACITY));
 
             for(int x = 0; x < width; x += imgW) {
                 for(int y = 0; y < height; y += imgH) {
@@ -88,13 +87,15 @@ public class RoundPanel extends JPanel {
             }
 
             g2.setComposite(originalComposite);
+            g2.setClip(null);
         }
 
-        g2.setClip(null);
-
         if(border != null) {
+            width -= RoundStatics.BORDER_THICKNESS / 2;
+            height -= RoundStatics.BORDER_THICKNESS / 2;
+
             g2.setColor(border);
-            g2.setStroke(new BasicStroke(RoundComponent.borderThickness));
+            g2.setStroke(new BasicStroke(RoundStatics.BORDER_THICKNESS));
             g2.drawRoundRect(0, 0, width, height, radius, radius);
         }
 

@@ -1,8 +1,7 @@
 package net.perry.betterthanlauncher.components.panels;
 
-import net.perry.betterthanlauncher.Main;
+import net.perry.betterthanlauncher.components.customs.RoundStatics;
 import net.perry.betterthanlauncher.util.tool.BrowserTool;
-import net.perry.betterthanlauncher.util.tool.PanelTool;
 import net.perry.betterthanlauncher.components.customs.RoundButton;
 import net.perry.betterthanlauncher.components.Theme;
 import net.perry.betterthanlauncher.util.Logger;
@@ -59,12 +58,12 @@ public class AuthPanel extends JPanel {
         });
         goButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        add(PanelTool.filler(getWidth(), 25));
+        add(RoundStatics.filler(getWidth(), 25));
         add(uriLabel);
         add(codeLabel);
-        add(PanelTool.filler(getWidth(), 25));
+        add(RoundStatics.filler(getWidth(), 25));
         add(copyButton);
-        add(PanelTool.filler(getWidth(), 25));
+        add(RoundStatics.filler(getWidth(), 25));
         add(goButton);
     }
 }
